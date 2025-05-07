@@ -53,10 +53,11 @@ assessments["Assessments"] {
     date updatedAt
 }
 
-questions --o{ answer : "has"
-treatments -- |{ answer : "contains"
-users --o{ treatments : "has"
-users --o{ assessments : "makes"
-products --o{ alternatives : "has"
-assessments }o-- products : "is for"
+questions ||--o{ answer : "has"
+treatments ||-- |{ answer : "contains"
+users ||--o{ treatments : "has"
+users ||--o{ assessments : "makes"
+products ||--o{ alternatives : "has"
+assessments }o--|| products : "is for"
+
 ```
