@@ -11,6 +11,12 @@ namespace QuatroCleanUp.MSTests
     [TestClass()]
     public class EventTests
     {
+        [TestInitialize]
+        public void Setup()
+        {
+            Event testEvent = new Event("Title", "Description", 05/06/2025 01:00:00PM, );
+        }
+
         [TestMethod()]
         public void EventTest()
         {
@@ -20,6 +26,7 @@ namespace QuatroCleanUp.MSTests
         [TestMethod()]
         public void ToStringTest()
         {
+
             Assert.Fail();
         }
     }
