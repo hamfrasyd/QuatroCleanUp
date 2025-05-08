@@ -4,60 +4,65 @@
 
 ```mermaid
 erDiagram
-users["Users (Institution)"] {}
+users["Users"] {
+    int userId
+    nvarchar name
+    nvarchar email
+    nvarchar password
+    int roleid
+    datetime2 createdDate
+    varbinary avatarPicture
+}
 
-treatments["Waste Treatment System"] {
+locations["Locations"] {
+    int id
+    decimal latitude
+    decimal longtitude
+}
+
+roles["Roles"] {
     int id PK
-    string userId FK
-    date createdAt
-    date updatedAt
+    nvarchar name
 }
 
-questions["Questions"] {
+statuses["Statuses"] {
     int id PK
-    string question
-    string type "text, number, date, etc."
-    boolean required
-    string def "default"
-    string options "comma separated values"
-    string unit
+    nvarchar name
 }
 
-answer["Treatment answer"] {
-    int id PK
-    int questionId FK
-    int treatmentId FK
-    string answer
+event["Event"] {
+    int eventId PK
+    nvarchar title
+    nvarchar desciption
+    datetime2 startTime
+    datetime2 endTime
+    bit familyfriendly
+    int participants
+    varbinary PictureId FK
+    decimal trashcollected
+    int statusId FK
+    int locationId FK   
 }
 
-products["Product SUPP"] {
-    int id PK
-    string name
-    string description
-    float price 
-    float weight "in grams"
-    float EF "Environmental Footprint"
+eventAttendances["EventAttendances"] {
+    int pictureId PK, FK
+    int eventId PK, FK
+    bit checkIn
+    datetime2 createdDate
 }
 
-alternatives["Alternatives"] {
-    int productId PK, FK
-    int alternativeId PK, FK
+pictures["Pictures"] {
+    int pictureId PK
+    int eventId
+    varbinary pictureDate
+    nvarchar description
 }
 
-assessments["Assessments"] {
-    int id PK
-    string userId FK
-    int productId FK
-    int ppm "pieces per month"
-    date createdAt
-    date updatedAt
-}
-
-questions ||--o{ answer : "has"
-treatments ||-- |{ answer : "contains"
-users ||--o{ treatments : "has"
-users ||--o{ assessments : "makes"
-products ||--o{ alternatives : "has"
-assessments }o--|| products : "is for"
+eventAttendances ||--o{ users : "has"
+event ||--o{eventAttendances : "contains"
+users ||--|| roles : "has"
+event ||-- |{ statuses : "has"
+event ||--o{ locations : "has"
+event ||--o{ pictures : "has"
 
 ```
