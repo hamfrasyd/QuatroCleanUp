@@ -1,9 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuatroCleanUp", "QuatroCleanUp\QuatroCleanUp.csproj", "{4F1EFB0D-6363-45E9-95D8-E9B6B63CAF45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuatroCleanUpMSTests", "QuatroCleanUpMSTests\QuatroCleanUpMSTests.csproj", "{3B2BAB93-653C-4131-A826-2E7DAC6F2C8E}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F1EFB0D-6363-45E9-95D8-E9B6B63CAF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F1EFB0D-6363-45E9-95D8-E9B6B63CAF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F1EFB0D-6363-45E9-95D8-E9B6B63CAF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F1EFB0D-6363-45E9-95D8-E9B6B63CAF45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B2BAB93-653C-4131-A826-2E7DAC6F2C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B2BAB93-653C-4131-A826-2E7DAC6F2C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B2BAB93-653C-4131-A826-2E7DAC6F2C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B2BAB93-653C-4131-A826-2E7DAC6F2C8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
