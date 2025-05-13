@@ -10,6 +10,7 @@ namespace EventTests
         private Event testEvent2;
         private Event testEvent3;
         private Event testEvent4;
+        private List<Event> testList;
 
 
         [TestInitialize]
@@ -25,13 +26,18 @@ namespace EventTests
                 new DateTime(2025, 5, 8, 13, 05, 0, DateTimeKind.Utc),
                 new DateTime(2025, 5, 8, 15, 05, 0, DateTimeKind.Utc),
                 true, 10, 2, 5);
+
+            testList.Add(testEvent);
+            testList.Add(testEvent2);
+            testList.Add(testEvent3);
+            testList.Add(testEvent4);
+
         }
 
         [TestMethod]
         public void CreateEventAsyncTest()
         {
             //Arrange
-
             EventRepository newEventRepo = new EventRepository();
 
             //Act
@@ -45,10 +51,14 @@ namespace EventTests
         public void CreateEventAsyncCreatesEventId()
         {
             //Arrange
+            EventRepository newEventRepositoy = new EventRepository();
+            int expectedResult = 1;
 
             //Act
+            Event actualResult = newEventRepositoy.CreateEventAsync(testEvent);
 
             //Assert
+            Assert.AreEqual(expectedResult, actualResult.EventId);
         }
 
 
@@ -79,10 +89,14 @@ namespace EventTests
         public void TestEventIsDeletedFromDatabase()
         {
             //Arrange
+            EventRepository eventRepository = new EventRepository();
+            testEvent.EventId = 1;
 
             //Act
+            Event newEvent = eventRepository.DeleteEvent(1);
 
             //Assert
+            Assert.IsNull(testList[0]);
 
         }
 
@@ -90,20 +104,28 @@ namespace EventTests
         public void TestGetAll()
         {
             //Arrange
+            EventRepository eventRepository = new EventRepository();
 
             //Act
+            Event expectedResult = testList.GetAll();
 
             //Assert
+            Assert.AreEqual(testList.Count, expectedResult.Count);
+
         }
 
         [TestMethod]
         public void TestGetById()
         {
             //Arrange
+            testEvent.EventId = 1;
+            //testList.Add(testEvent); <--- burde vi ikke behøver grundet Setup, right?
 
             //Act
+            List<Event> expectedResult = testList.GetById(1);
 
             //Assert
+            Assert.AreEqual(testList.Count, expectedResult.Count);
         }
     }
 }
