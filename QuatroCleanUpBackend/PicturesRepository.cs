@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using SixLabors.ImageSharp;
 
 
 namespace QuatroCleanUpBackend
@@ -19,12 +20,12 @@ namespace QuatroCleanUpBackend
             using (SqlConnection connection = new SqlConnection(_connectionString))
 
             {
-                string query = "INSERT INTO Pictures (EventId, PictureDate, Description) VALUES (@EventId, @PictureDate, @Description)";
+                string query = "INSERT INTO Pictures (EventId, PictureData, Description) VALUES (@EventId, @PictureData, @Description)";
                 
                 var command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@EventId", picture.EventId);
-                command.Parameters.AddWithValue("@PictureDate", picture.PictureData);
+                command.Parameters.AddWithValue("@PictureData", picture.PictureData);
                 command.Parameters.AddWithValue("@Description", picture.Description);
 
                 connection.Open();   
@@ -42,7 +43,7 @@ namespace QuatroCleanUpBackend
             //Opretter forbindelse til databasen 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT PictureId, EventId, PictureDate, Description FROM Pictures";
+                string query = "SELECT PictureId, EventId, PictureData, Description FROM Pictures";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -72,7 +73,7 @@ namespace QuatroCleanUpBackend
             //opretter forbindlese 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = "SELECT PictureId, EventId, PictureDate, Description FROM Pictures WHERE PictureId = @PictureId";
+                string query = "SELECT PictureId, EventId, PictureData, Description FROM Pictures WHERE PictureId = @PictureId";
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@PictureId", id);
@@ -91,6 +92,7 @@ namespace QuatroCleanUpBackend
                             Description = (string)reader["Description"]
                         };
                     }
+    
                     else
                     {
                         throw new Exception($"picture with ID {id} does not exist.");

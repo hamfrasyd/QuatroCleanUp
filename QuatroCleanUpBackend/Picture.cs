@@ -12,7 +12,7 @@ namespace QuatroCleanUpBackend
 
         public int EventId { get; set; }
 
-        public byte[]? PictureData { get; set; }
+        public byte[]? PictureData { get; set; } 
 
         private string _description { get; set; }
         public string Description
@@ -24,7 +24,9 @@ namespace QuatroCleanUpBackend
                 {
                     throw new ArgumentException(nameof(value), "Description cannot be more than 500 characters.");
                 }
+                _description = value;
             }
+            
         }
 
         public Picture()

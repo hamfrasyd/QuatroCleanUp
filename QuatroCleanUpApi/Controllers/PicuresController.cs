@@ -5,7 +5,7 @@ using QuatroCleanUpBackend;
 
 namespace QuatroCleanUpApi.Controllers
 {
-    [Route("api/PicturesController")]
+    [Route("api/pictures")]
     [ApiController]
     public class PicuresController : ControllerBase
     {
@@ -35,28 +35,61 @@ namespace QuatroCleanUpApi.Controllers
         }
 
         // GET api/<PicuresController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Get(int id)
         {
-            return "value";
+            try
+            {
+                Picture p = _repo.GetById(id);
+                return Ok(p);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(); //404
+            }
         }
 
         // POST api/<PicuresController>
         [HttpPost]
-        public void Post([FromBody]string value)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Post([FromBody]Picture picture)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // <- giver dig præcis fejl
+            }
+            try
+            {
+                Picture p = _repo.Add(picture);
+                return Created("api/pictures/" + p.PictureId, p);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // PUT api/<PicuresController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
 
         // DELETE api/<PicuresController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Delete(int id)
         {
+            try
+            {
+                Picture p = _repo.Delete(id);
+                return Ok(p);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }
