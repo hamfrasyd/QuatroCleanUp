@@ -30,10 +30,10 @@
             LocationId = locationId;
         }
 
-        //public Event()
-        //{
-        //
-        //}
+        public Event()
+        {
+        
+        }
 
         public override string ToString()
         {
