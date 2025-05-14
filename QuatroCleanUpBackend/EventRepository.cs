@@ -45,26 +45,40 @@ namespace QuatroCleanUpBackend
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string SqlQuery = @"INSERT INTO Events (Title, Description, StartTime, EndTime, FamilyFriendly, Participants, PictureId, TrashCollected, StatusId, LocationId)
+                try
+                {
+                    string SqlQuery = @"INSERT INTO Events (Title, Description, StartTime, EndTime, FamilyFriendly, Participants, PictureId, TrashCollected, StatusId, LocationId)
                                     VALUES (@Title, @Description, @StartTime, @EndTime, @FamilyFriendly, @Participants, @PictureId, @TrashCollected, @StatusId, @LocationId); SELECT SCOPE_IDENTITY()";
 
-                SqlCommand command = new SqlCommand(SqlQuery, connection);
-                command.Parameters.AddWithValue("@Title", newEvent.Title);
-                command.Parameters.AddWithValue("@Description", newEvent.Description);
-                command.Parameters.AddWithValue("@StartTime", newEvent.StartTime);
-                command.Parameters.AddWithValue("@EndTime", newEvent.EndTime);
-                command.Parameters.AddWithValue("@FamilyFriendly", newEvent.FamilyFriendly);
-                command.Parameters.AddWithValue("@Participants", newEvent.Participants);
-                command.Parameters.AddWithValue("@PictureId", newEvent.PictureId);
-                command.Parameters.AddWithValue("@TrashCollected", newEvent.TrashCollected);
-                command.Parameters.AddWithValue("@StatusId", newEvent.StatusId);
-                command.Parameters.AddWithValue("@LocationId", newEvent.LocationId);
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@Title", newEvent.Title);
+                    command.Parameters.AddWithValue("@Description", newEvent.Description);
+                    command.Parameters.AddWithValue("@StartTime", newEvent.StartTime);
+                    command.Parameters.AddWithValue("@EndTime", newEvent.EndTime);
+                    command.Parameters.AddWithValue("@FamilyFriendly", newEvent.FamilyFriendly);
+                    command.Parameters.AddWithValue("@Participants", newEvent.Participants);
+                    command.Parameters.AddWithValue("@PictureId", newEvent.PictureId);
+                    command.Parameters.AddWithValue("@TrashCollected", newEvent.TrashCollected);
+                    command.Parameters.AddWithValue("@StatusId", newEvent.StatusId);
+                    command.Parameters.AddWithValue("@LocationId", newEvent.LocationId);
 
-                await connection.OpenAsync();
-                var fetchId = await command.ExecuteScalarAsync(); //ExecuteScalarAsync returns object
+                    await connection.OpenAsync();
+                    var fetchId = await command.ExecuteScalarAsync(); //ExecuteScalarAsync returns object
 
-                newEvent.EventId = Convert.ToInt32(fetchId); //therefore we convert the fetchedId to int.
-                return newEvent;
+                    newEvent.EventId = Convert.ToInt32(fetchId); //therefore we convert the fetchedId to int.
+                    return newEvent;
+                }
+                catch (SqlException ex)
+                {
+                    Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                    throw;
+                }
+
             }         
 
         }
@@ -80,97 +94,127 @@ namespace QuatroCleanUpBackend
         {
             List<Event> eventList = new List<Event>();
 
-            using (SqlConnection connection = new SqlConnection())
+            try
             {
-                string SqlQuery = "SELECT * FROM Events";
-
-                SqlCommand command = new SqlCommand(SqlQuery, connection);
-
-                await connection.OpenAsync();
-
-                using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
-            //ExecuteReader executes the query and returns a SqlDataReader to read the table row by row. 
+                using (SqlConnection connection = new SqlConnection())
                 {
-                    while (await reader.ReadAsync())
+                    string SqlQuery = "SELECT * FROM Events";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+
+                    await connection.OpenAsync();
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    //ExecuteReader executes the query and returns a SqlDataReader to read the table row by row. 
                     {
-                        Event newEvent = new Event
+                        while (await reader.ReadAsync())
                         {
-                            EventId = (int)reader["EventId"],
-                            Title = (string)reader["Title"],
-                            Description = (string)reader["Description"],
-                            StartTime = (DateTime)reader["StartTime"],
-                            EndTime = (DateTime)reader["EndTime"],
-                            FamilyFriendly = (bool)reader["FamilyFriendly"],
-                            Participants = (int)reader["Participants"],
-                            PictureId = (byte[])reader["PictureId"],
-                            TrashCollected = (decimal)reader["TrashCollected"],
-                            StatusId = (int)reader["StatusId"],
-                            LocationId = (int)reader["LocationId"]
-                        };
-                        eventList.Add(newEvent);
+                            Event newEvent = new Event
+                            {
+                                EventId = (int)reader["EventId"],
+                                Title = (string)reader["Title"],
+                                Description = (string)reader["Description"],
+                                StartTime = (DateTime)reader["StartTime"],
+                                EndTime = (DateTime)reader["EndTime"],
+                                FamilyFriendly = (bool)reader["FamilyFriendly"],
+                                Participants = (int)reader["Participants"],
+                                PictureId = (byte[])reader["PictureId"],
+                                TrashCollected = (decimal)reader["TrashCollected"],
+                                StatusId = (int)reader["StatusId"],
+                                LocationId = (int)reader["LocationId"]
+                            };
+                            eventList.Add(newEvent);
+                        }
+                    }
+                    return eventList;
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"");
+                throw;
+            }
+
+        }
+
+        /// <summary>
+        /// Method fetches a single Event from the database and returns it, based on the id input
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Event</returns>
+        public async Task<Event> GetByIdAsync(int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = "SELECT * FROM Events WHERE EventId = @EventId";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@EventId", id);
+
+                    await connection.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Event
+                            {
+                                EventId = (int)reader["EventId"],
+                                Title = (string)reader["Title"],
+                                Description = (string)reader["Description"],
+                                StartTime = (DateTime)reader["StartTime"],
+                                EndTime = (DateTime)reader["EndTime"],
+                                FamilyFriendly = (bool)reader["FamilyFriendly"],
+                                Participants = (int)reader["Participants"],
+                                PictureId = (byte[])reader["PictureId"],
+                                TrashCollected = (decimal)reader["TrashCollected"],
+                                StatusId = (int)reader["StatusId"],
+                                LocationId = (int)reader["LocationId"]
+
+                            };
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Event with Id {id} does not exist.");
+                        }
                     }
                 }
-                return eventList;
+            }
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                throw;
             }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="eventUpdate"></param>
         /// <returns></returns>
-        public async Task<Event> GetByIdAsync(int id)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string SqlQuery = "SELECT * FROM Events WHERE EventId = @EventId";
-
-                SqlCommand command = new SqlCommand(SqlQuery, connection);
-                command.Parameters.AddWithValue("@EventId", id);
-
-                await connection.OpenAsync();
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        return new Event
-                        {
-                            EventId = (int)reader["EventId"],
-                            Title = (string)reader["Title"],
-                            Description = (string)reader["Description"],
-                            StartTime = (DateTime)reader["StartTime"],
-                            EndTime = (DateTime)reader["EndTime"],
-                            FamilyFriendly = (bool)reader["FamilyFriendly"],
-                            Participants = (int)reader["Participants"],
-                            PictureId = (byte[])reader["PictureId"],
-                            TrashCollected = (decimal)reader["TrashCollected"],
-                            StatusId = (int)reader["StatusId"],
-                            LocationId = (int)reader["LocationId"]
-
-                        };
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Event with Id {id} does not exist.");
-                    }
-                }
-
-
-            }
-
-
-        }
-
+        /// <exception cref="ArgumentNullException"></exception>
         public async Task<Event> UpdateEventAsync(Event eventUpdate)
         {
-
-            if(eventUpdate == null)
+            if (eventUpdate == null)
             {
                 throw new ArgumentNullException(nameof(eventUpdate), "You need to input information if you want to update the event.");
-            } 
-            using(SqlConnection connection = new SqlConnection(_connectionString))
+            }
+            try
             {
-                string SqlQuery = @"UPDATE Events SET 
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = @"UPDATE Events SET 
                                     Title = @Title, 
                                     Description = @Description,
                                     StartTime = @StartTime,
@@ -185,29 +229,71 @@ namespace QuatroCleanUpBackend
                                     EventId = @EventId";
 
 
-                SqlCommand command = new SqlCommand(SqlQuery, connection);
-                command.Parameters.AddWithValue("@Title", eventUpdate.Title);
-                command.Parameters.AddWithValue("@Description", eventUpdate.Description);
-                command.Parameters.AddWithValue("@StartTime", eventUpdate.StartTime);
-                command.Parameters.AddWithValue("@EndTime", eventUpdate.EndTime);
-                command.Parameters.AddWithValue("@FamilyFriendly", eventUpdate.FamilyFriendly);
-                command.Parameters.AddWithValue("@Participants", eventUpdate.Participants);
-                command.Parameters.AddWithValue("@PictureId", eventUpdate.PictureId);
-                command.Parameters.AddWithValue("@TrashCollected", eventUpdate.TrashCollected);
-                command.Parameters.AddWithValue("@StatusId", eventUpdate.StatusId);
-                command.Parameters.AddWithValue("@LocationId", eventUpdate.LocationId);
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@Title", eventUpdate.Title);
+                    command.Parameters.AddWithValue("@Description", eventUpdate.Description);
+                    command.Parameters.AddWithValue("@StartTime", eventUpdate.StartTime);
+                    command.Parameters.AddWithValue("@EndTime", eventUpdate.EndTime);
+                    command.Parameters.AddWithValue("@FamilyFriendly", eventUpdate.FamilyFriendly);
+                    command.Parameters.AddWithValue("@Participants", eventUpdate.Participants);
+                    command.Parameters.AddWithValue("@PictureId", eventUpdate.PictureId);
+                    command.Parameters.AddWithValue("@TrashCollected", eventUpdate.TrashCollected);
+                    command.Parameters.AddWithValue("@StatusId", eventUpdate.StatusId);
+                    command.Parameters.AddWithValue("@LocationId", eventUpdate.LocationId);
 
 
-                await connection.OpenAsync();
-                await command.ExecuteNonQueryAsync();
-            
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                    return eventUpdate;
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                throw;
             }
 
-
+           
         }
 
-        public async Task<Event> DeleteEventAsync()
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="deleteEvent"></param>
+        /// <returns></returns>
+        public async Task<Event> DeleteEventAsync(Event deleteEvent)
         {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = "DELETE FROM Events WHERE EventId = @EventId";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@EventId", deleteEvent.EventId);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                    return deleteEvent;
+
+                }
+            }
+            catch(SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw;
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                throw;
+            }
 
         }
     }
