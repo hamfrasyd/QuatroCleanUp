@@ -85,13 +85,24 @@ namespace QuatroCleanUpBackend
                 {
                     while (await reader.ReadAsync())
                     {
-                        Event newEvent = new Event()
+                        Event newEvent = new Event
                         {
-
-                        }
-
+                            EventId = (int)reader["EventId"],
+                            Title = (string)reader["Title"],
+                            Description = (string)reader["Description"],
+                            StartTime = (DateTime)reader["StartTime"],
+                            EndTime = (DateTime)reader["EndTime"],
+                            FamilyFriendly = (bool)reader["FamilyFriendly"],
+                            Participants = (int)reader["Participants"],
+                            PictureId = (byte[])reader["PictureId"],
+                            TrashCollected = (decimal)reader["TrashCollected"],
+                            StatusId = (int)reader["StatusId"],
+                            LocationId = (int)reader["LocationId"]
+                        };
+                        eventList.Add(newEvent);
                     }
                 }
+                return eventList;
             }
         }
 
