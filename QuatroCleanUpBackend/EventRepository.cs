@@ -199,10 +199,10 @@ namespace QuatroCleanUpBackend
         }
 
         /// <summary>
-        /// 
+        /// We update the event based on the eventId provided in the input.
         /// </summary>
         /// <param name="eventUpdate"></param>
-        /// <returns></returns>
+        /// <returns>Event</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public async Task<Event> UpdateEventAsync(Event eventUpdate)
         {
@@ -263,10 +263,10 @@ namespace QuatroCleanUpBackend
 
 
         /// <summary>
-        /// 
+        /// Deletes an event from the database. Find the event from the EventId.
         /// </summary>
         /// <param name="deleteEvent"></param>
-        /// <returns></returns>
+        /// <returns>Event</returns>
         public async Task<Event> DeleteEventAsync(Event deleteEvent)
         {
             try
