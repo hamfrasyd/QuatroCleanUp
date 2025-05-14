@@ -29,7 +29,7 @@ namespace MethodTests
 
             //Act
 
-            Pictures picture = pic.Add(new Pictures());
+            Picture picture = pic.Add(new Picture());
 
             //Assert
             Assert.AreEqual(1, picture.PictureId);

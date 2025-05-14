@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuatroCleanUpBackend
 {
-    public class Pictures
+    public class Picture
     {
         public  int PictureId { get; set; }
 
@@ -27,7 +27,7 @@ namespace QuatroCleanUpBackend
             }
         }
 
-        public Pictures()
+        public Picture()
         {
             // Default constructor
         }
