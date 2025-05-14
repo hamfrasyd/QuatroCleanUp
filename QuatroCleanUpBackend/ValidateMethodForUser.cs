@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace QuatroCleanUpBackend
 {
@@ -96,8 +91,6 @@ namespace QuatroCleanUpBackend
             {
                 throw new ArgumentException("Password must contain at least one special character.");
             }
-
-
 
         }
     }
