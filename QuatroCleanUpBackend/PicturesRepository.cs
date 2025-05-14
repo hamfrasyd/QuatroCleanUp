@@ -1,11 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+
 
 namespace QuatroCleanUpBackend
 {
@@ -21,20 +16,65 @@ namespace QuatroCleanUpBackend
 
         public Pictures Add(Pictures picture)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
 
             {
-                connection.Open();
-                var command = new SqlCommand("INSERT INTO Pictures (EventId, PictureDate, Description) OUTPUT Inserted.PictureId VALUES (@EventId, @PictureDate, @Description); SELECT SCOPE_IDENTITY();", connection);
+                string query = "INSERT INTO Pictures (EventId, PictureDate, Description) VALUES (@EventId, @PictureDate, @Description)";
+                
+                var command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@EventId", picture.EventId);
                 command.Parameters.AddWithValue("@PictureDate", picture.PictureData);
                 command.Parameters.AddWithValue("@Description", picture.Description);
 
-                picture.PictureId = (int)command.ExecuteScalar();
+                connection.Open();   
+                command.ExecuteNonQuery();
 
             }
             return picture;
+        }
+
+        public List<Pictures> GetAll()
+        {
+            //initialisere en tom liste 
+            var pictureList = new List<Pictures>();
+
+            //Opretter forbindelse til databasen 
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT PictureId, EventId, PictureDate, Description FROM Pictures";
+
+                var command = new SqlCommand(query, connection);
+
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Pictures picture = new Pictures
+                        {
+                            PictureId = (int)reader["PictureId"],
+                            EventId = (int)reader["EventId"],
+                            PictureData = (byte[])reader["PictureData"],
+                            Description = (string)reader["Description"]
+                        };
+
+                        pictureList.Add(picture);
+                    }
+                }
+            }
+            return pictureList;
+
+        }
+
+        public Pictures GetById(int id)
+        {
+
+        }
+
+        public Pictures Delete(int id)
+        {
+
         }
     }
 }
