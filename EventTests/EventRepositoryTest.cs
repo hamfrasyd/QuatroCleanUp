@@ -93,7 +93,7 @@ namespace EventTests
             testEvent.EventId = 1;
 
             //Act
-            Event newEvent = eventRepository.DeleteEvent(1);
+            Event newEvent = eventRepository.DeleteEventAsync();
 
             //Assert
             Assert.IsNull(testList[0]);
