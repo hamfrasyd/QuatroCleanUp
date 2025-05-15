@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Core;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 
 namespace QuatroCleanUpBackend
 {
@@ -23,21 +27,16 @@ namespace QuatroCleanUpBackend
 
         }
 
+
         /// <summary>
-        /// I have downloaded the Microsoft.Data.SqlClient package, because it is the
-        /// newer version. https://blog.danskingdom.com/Updating-from-System-Data-SqlClient-to-Microsoft-Data-SqlClient/
-        /// In this metho I need to create a new event object, add it to the database
-        /// and to give it an EventId which increments, with every new creation of events.
-        /// First we create a SqlConnection to our database, using our connectionString saved in appSettings.
-        /// Then, we create a string, into which we can put all our information, i.e. an Event object.
-        /// In this SqlQuery we end it with a request for Identity, in this case the EventId.
-        /// Then we create a new SqlCommand - a datatype used to represent a transact sql-statement.
-        /// Into this command we put the information from the new evet object - using the SqlCommand's property, parameters.
-        /// Then we finally open a connection to the database.
-        /// Finally we execute our SqlCommand object, which ships our information to the database.
+        /// In this method we create a new Event, using SqlConnection & SqlCommand and return the Event upon success
         /// </summary>
         /// <param name="newEvent"></param>
-        /// <returns>An Event object</returns>
+        /// <returns></returns>
+        /// <remarks>
+        /// I have downloaded the Microsoft.Data.SqlClient package, because it is the
+        /// newer version.
+        /// https://blog.danskingdom.com/Updating-from-System-Data-SqlClient-to-Microsoft-Data-SqlClient/</remarks>
         public async Task<Event> CreateEventAsync(Event newEvent)
         {
             //Event createEvent = newEvent;
@@ -87,7 +86,7 @@ namespace QuatroCleanUpBackend
         /// We use the ExecuteReaderAsync instead of ExecuteScalarAsync, because we don't need to query, but
         /// rather need to fetch all the events we can. ExecuteReader returns a SqlDataReader, which reads the table
         /// columns of the table, row by row.
-        /// </summary>
+        /// </summary> 
         /// <returns>A list of Events</returns>
         public async Task<List<Event>> GetAllAsync()
         {
@@ -266,8 +265,13 @@ namespace QuatroCleanUpBackend
         /// </summary>
         /// <param name="deleteEvent"></param>
         /// <returns>Event</returns>
-        public async Task<Event> DeleteEventAsync(Event deleteEvent)
+        public async Task<Event> DeleteEventAsync(int id)
         {
+            var getEvent = await GetByIdAsync(id);
+            if (getEvent is null)
+            {
+                throw new ArgumentNullException("The event does not exist");
+            }
             try
             {
                 using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -275,11 +279,11 @@ namespace QuatroCleanUpBackend
                     string SqlQuery = "DELETE FROM Events WHERE EventId = @EventId";
 
                     SqlCommand command = new SqlCommand(SqlQuery, connection);
-                    command.Parameters.AddWithValue("@EventId", deleteEvent.EventId);
+                    command.Parameters.AddWithValue("@EventId", id);
 
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
-                    return deleteEvent;
+                    return getEvent;
 
                 }
             }
@@ -297,3 +301,25 @@ namespace QuatroCleanUpBackend
         }
     }
 }
+
+
+
+
+/// <summary>
+/// In this method we create a new Event, using SqlConnection & SqlCommand and return the Event upon success.
+/// </summary>
+/// <param name="newEvent"></param>
+/// <returns>An Event object</returns>
+/// <remarks>
+/// I have downloaded the Microsoft.Data.SqlClient package, because it is the
+/// newer version.https://blog.danskingdom.com/Updating-from-System-Data-SqlClient-to-Microsoft-Data-SqlClient/
+/// In this metho I need to create a new event object, add it to the database
+/// and to give it an EventId which increments, with every new creation of events.
+/// First we create a SqlConnection to our database, using our connectionString saved in appSettings.
+/// Then, we create a string, into which we can put all our information, i.e.an Event object.
+/// In this SqlQuery we end it with a request for Identity, in this case the EventId.
+/// Then we create a new SqlCommand - a datatype used to represent a transact sql-statement.
+/// Into this command we put the information from the new evet object - using the SqlCommand's property, parameters.
+/// Then we finally open a connection to the database.
+/// Finally we execute our SqlCommand object, which ships our information to the database.
+/// </remarks>
