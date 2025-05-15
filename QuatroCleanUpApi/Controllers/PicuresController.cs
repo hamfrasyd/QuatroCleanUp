@@ -9,11 +9,13 @@ namespace QuatroCleanUpApi.Controllers
     [ApiController]
     public class PicuresController : ControllerBase
     {
-
+        private ILogger _logger;
         private readonly PicturesRepository _repo;
-        public PicuresController(PicturesRepository repo)
+        public PicuresController(PicturesRepository repo, ILogger<PicuresController> logger)
         {
             _repo = repo;
+            _logger = logger;
+
         }
 
 
@@ -21,16 +23,25 @@ namespace QuatroCleanUpApi.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAsync()
         {
-            List<Picture> pictureList = _repo.GetAll();
-            if (pictureList.Count == 0)
+            try
             {
-                return NoContent(); //204 - kan også bruge NotFound(); 404
+                List<Picture> pictureList = await _repo.GetAllAsync();
+                if (pictureList.Count == 0)
+                {
+                    return NoContent(); //204 - kan også bruge NotFound(); 404
+                }
+                else
+                {
+                    return Ok(pictureList); //ok returnere 200
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Ok(pictureList); //ok returnere 200
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
 
@@ -39,16 +50,23 @@ namespace QuatroCleanUpApi.Controllers
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             try
             {
-                Picture p = _repo.GetById(id);
+                Picture p = await _repo.GetByIdAsync(id);
                 return Ok(p);
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound(); //404
+                _logger.LogError(ex.Message);
+                return NotFound(); //404  
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
 
@@ -56,20 +74,24 @@ namespace QuatroCleanUpApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Post([FromBody]Picture picture)
+        public async Task<IActionResult> PostAsync([FromBody]Picture picture)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState); // <- giver dig præcis fejl
-            }
             try
             {
-                Picture p = _repo.Add(picture);
+                Picture p = await _repo.AddAsync(picture);
                 return Created("api/pictures/" + p.PictureId, p);
             }
             catch (ArgumentException ex)
             {
+                _logger.LogError(ex.Message);
+
                 return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
 
@@ -79,16 +101,23 @@ namespace QuatroCleanUpApi.Controllers
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
-                Picture p = _repo.Delete(id);
+                Picture p = await _repo.DeleteAsync(id);
                 return Ok(p);
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
-                return NotFound();
+                _logger.LogError(ex.Message);
+                return NotFound(); 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
     }
