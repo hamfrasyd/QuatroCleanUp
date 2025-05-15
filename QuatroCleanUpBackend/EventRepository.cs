@@ -94,7 +94,7 @@ namespace QuatroCleanUpBackend
 
             try
             {
-                using (SqlConnection connection = new SqlConnection())
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     string SqlQuery = "SELECT * FROM Events";
 
@@ -115,7 +115,7 @@ namespace QuatroCleanUpBackend
                                 StartTime = (DateTime)reader["StartTime"],
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
-                                Participants = (int)reader["Participants"],
+                                Participants = reader["Participants"] != DBNull.Value ? (int)reader["Participants"] : 0,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
@@ -168,6 +168,7 @@ namespace QuatroCleanUpBackend
                                 StartTime = (DateTime)reader["StartTime"],
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
+                                Participants = (int)reader["Participants"],
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
@@ -176,7 +177,7 @@ namespace QuatroCleanUpBackend
                         }
                         else
                         {
-                            throw new InvalidOperationException($"Event with Id {id} does not exist.");
+                            throw new KeyNotFoundException($"Event with Id {id} does not exist.");
                         }
                     }
                 }
@@ -188,6 +189,7 @@ namespace QuatroCleanUpBackend
             }
             catch (Exception ex)
             {
+                throw new Exception(ex.Message);
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
                 throw;
             }
