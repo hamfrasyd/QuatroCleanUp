@@ -116,7 +116,6 @@ namespace QuatroCleanUpBackend
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
                                 Participants = (int)reader["Participants"],
-                                PictureId = reader["PictureId"] != DBNull.Value ? (int)reader["PictureId"] : null,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
@@ -169,8 +168,6 @@ namespace QuatroCleanUpBackend
                                 StartTime = (DateTime)reader["StartTime"],
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
-                                Participants = (int)reader["Participants"],
-                                PictureId = reader["PictureId"] != DBNull.Value ? (int)reader["PictureId"] : null,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
@@ -219,7 +216,6 @@ namespace QuatroCleanUpBackend
                                     EndTime = @EndTime,
                                     FamilyFriendly = @FamilyFriendly,
                                     Participants = @Participants,
-                                    PictureId = @PictureId,
                                     TrashCollected = @TrashCollected,
                                     StatusId = @StatusId,
                                     LocationId = @LocationId
@@ -234,7 +230,6 @@ namespace QuatroCleanUpBackend
                     command.Parameters.AddWithValue("@EndTime", eventUpdate.EndTime);
                     command.Parameters.AddWithValue("@FamilyFriendly", eventUpdate.FamilyFriendly);
                     command.Parameters.AddWithValue("@Participants", eventUpdate.Participants);
-                    command.Parameters.AddWithValue("@PictureId", eventUpdate.PictureId is not null ? eventUpdate.PictureId : DBNull.Value);
                     command.Parameters.AddWithValue("@TrashCollected", eventUpdate.TrashCollected);
                     command.Parameters.AddWithValue("@StatusId", eventUpdate.StatusId);
                     command.Parameters.AddWithValue("@LocationId", eventUpdate.LocationId);

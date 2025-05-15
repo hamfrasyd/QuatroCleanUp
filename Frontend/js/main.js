@@ -11,7 +11,7 @@ const app = Vue.createApp({
             description:"",
             startTime:"",
             endTime:"",
-            familyFriendly:"",
+            familyFriendly: false,
             participants: "",
             pictureId: "",
             trashCollected: "",
@@ -28,9 +28,9 @@ const app = Vue.createApp({
                 description: this.description,
                 startTime: this.startTime,
                 endTime: this.endTime,
-                familyFriendly: this.familyFriendly === "true",
+                familyFriendly: this.familyFriendly,
                 participants: parseInt(this.participants),
-                pictureId: parseInt(this.pictureId),
+                pictureId: this.pictureId ? parseInt(this.pictureId) : null,   
                 trashCollected: parseInt(this.trashCollected),
                 statusId: parseInt(this.statusId),
                 locationId: parseInt(this.locationId),
@@ -39,6 +39,7 @@ const app = Vue.createApp({
                 this.statuskode = response.status
             })
             .catch(error => {
+                this.statuskode = error.response?.status || "Fejl"
                 console.log("Fejl i createEvent", error)
             })
         }
