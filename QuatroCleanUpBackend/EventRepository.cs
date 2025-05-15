@@ -116,7 +116,7 @@ namespace QuatroCleanUpBackend
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
                                 Participants = (int)reader["Participants"],
-                                PictureId = reader["PictureId"] != DBNull.Value ? (byte[])reader["PictureId"] : null,
+                                PictureId = reader["PictureId"] != DBNull.Value ? (int)reader["PictureId"] : null,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
@@ -170,7 +170,7 @@ namespace QuatroCleanUpBackend
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
                                 Participants = (int)reader["Participants"],
-                                PictureId = reader["PictureId"] != DBNull.Value ? (byte[])reader["PictureId"] : null,
+                                PictureId = reader["PictureId"] != DBNull.Value ? (int)reader["PictureId"] : null,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]

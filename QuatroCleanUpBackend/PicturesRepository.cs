@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using SixLabors.ImageSharp;
+
 
 
 namespace QuatroCleanUpBackend
