@@ -9,7 +9,6 @@
         public DateTime EndTime { get; set; }
         public bool FamilyFriendly { get; set; }
         public int Participants { get; set; }
-        public byte[]? PictureId { get; set; }
         public decimal TrashCollected { get; set; }
         public int StatusId { get; set; }
         public int LocationId { get; set; }

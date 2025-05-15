@@ -29,6 +29,129 @@ namespace QuatroCleanUpBackend
 
 
         /// <summary>
+        /// In this method we get all event objects from the Events table in the SQL.
+        /// We use the ExecuteReaderAsync instead of ExecuteScalarAsync, because we don't need to query, but
+        /// rather need to fetch all the events we can. ExecuteReader returns a SqlDataReader, which reads the table
+        /// columns of the table, row by row.
+        /// </summary> 
+        /// <returns>A list of Events</returns>
+        public async Task<List<Event>> GetAllAsync()
+        {
+            List<Event> eventList = new List<Event>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = "SELECT * FROM Events";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+
+                    await connection.OpenAsync();
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    //ExecuteReader executes the query and returns a SqlDataReader to read the table row by row. 
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            Event newEvent = new Event
+                            {
+                                EventId = (int)reader["EventId"],
+                                Title = (string)reader["Title"],
+                                Description = (string)reader["Description"],
+                                StartTime = (DateTime)reader["StartTime"],
+                                EndTime = (DateTime)reader["EndTime"],
+                                FamilyFriendly = (bool)reader["FamilyFriendly"],
+                                Participants = reader["Participants"] != DBNull.Value ? (int)reader["Participants"] : 0,
+                                TrashCollected = (decimal)reader["TrashCollected"],
+                                StatusId = (int)reader["StatusId"],
+                                LocationId = (int)reader["LocationId"]
+                            };
+                            eventList.Add(newEvent);
+                        }
+                    }
+                    return eventList;
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"");
+                throw new Exception(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
+                Console.Error.WriteLine($"");
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        /// <summary>
+        /// Method fetches a single Event from the database and returns it, based on the id input
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Event</returns>
+        public async Task<Event> GetByIdAsync(int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = "SELECT * FROM Events WHERE EventId = @EventId";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@EventId", id);
+
+                    await connection.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Event
+                            {
+                                EventId = (int)reader["EventId"],
+                                Title = (string)reader["Title"],
+                                Description = (string)reader["Description"],
+                                StartTime = (DateTime)reader["StartTime"],
+                                EndTime = (DateTime)reader["EndTime"],
+                                FamilyFriendly = (bool)reader["FamilyFriendly"],
+                                Participants = (int)reader["Participants"],
+                                TrashCollected = (decimal)reader["TrashCollected"],
+                                StatusId = (int)reader["StatusId"],
+                                LocationId = (int)reader["LocationId"]
+
+                            };
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Event with Id {id} does not exist.");
+                        }
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                if(ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
+                Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+
+
+        /// <summary>
         /// In this method we create a new Event, using SqlConnection & SqlCommand and return the Event upon success
         /// </summary>
         /// <param name="newEvent"></param>
@@ -73,129 +196,17 @@ namespace QuatroCleanUpBackend
                 }
                 catch (Exception ex)
                 {
+                    if (ex.InnerException != null)
+                    {
+                        throw new Exception(ex.InnerException.Message);
+                    }
                     Console.Error.WriteLine($"Some error occurred: {ex.Message}");
                     throw;
                 }
 
-            }         
-
-        }
-
-        /// <summary>
-        /// In this method we get all event objects from the Events table in the SQL.
-        /// We use the ExecuteReaderAsync instead of ExecuteScalarAsync, because we don't need to query, but
-        /// rather need to fetch all the events we can. ExecuteReader returns a SqlDataReader, which reads the table
-        /// columns of the table, row by row.
-        /// </summary> 
-        /// <returns>A list of Events</returns>
-        public async Task<List<Event>> GetAllAsync()
-        {
-            List<Event> eventList = new List<Event>();
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection())
-                {
-                    string SqlQuery = "SELECT * FROM Events";
-
-                    SqlCommand command = new SqlCommand(SqlQuery, connection);
-
-                    await connection.OpenAsync();
-
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                    //ExecuteReader executes the query and returns a SqlDataReader to read the table row by row. 
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            Event newEvent = new Event
-                            {
-                                EventId = (int)reader["EventId"],
-                                Title = (string)reader["Title"],
-                                Description = (string)reader["Description"],
-                                StartTime = (DateTime)reader["StartTime"],
-                                EndTime = (DateTime)reader["EndTime"],
-                                FamilyFriendly = (bool)reader["FamilyFriendly"],
-                                Participants = (int)reader["Participants"],
-                                PictureId = reader["PictureId"] != DBNull.Value ? (byte[])reader["PictureId"] : null,
-                                TrashCollected = (decimal)reader["TrashCollected"],
-                                StatusId = (int)reader["StatusId"],
-                                LocationId = (int)reader["LocationId"]
-                            };
-                            eventList.Add(newEvent);
-                        }
-                    }
-                    return eventList;
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.Error.WriteLine($"");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"");
-                throw;
             }
 
         }
-
-        /// <summary>
-        /// Method fetches a single Event from the database and returns it, based on the id input
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Event</returns>
-        public async Task<Event> GetByIdAsync(int id)
-        {
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
-                {
-                    string SqlQuery = "SELECT * FROM Events WHERE EventId = @EventId";
-
-                    SqlCommand command = new SqlCommand(SqlQuery, connection);
-                    command.Parameters.AddWithValue("@EventId", id);
-
-                    await connection.OpenAsync();
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new Event
-                            {
-                                EventId = (int)reader["EventId"],
-                                Title = (string)reader["Title"],
-                                Description = (string)reader["Description"],
-                                StartTime = (DateTime)reader["StartTime"],
-                                EndTime = (DateTime)reader["EndTime"],
-                                FamilyFriendly = (bool)reader["FamilyFriendly"],
-                                Participants = (int)reader["Participants"],
-                                PictureId = reader["PictureId"] != DBNull.Value ? (byte[])reader["PictureId"] : null,
-                                TrashCollected = (decimal)reader["TrashCollected"],
-                                StatusId = (int)reader["StatusId"],
-                                LocationId = (int)reader["LocationId"]
-
-                            };
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException($"Event with Id {id} does not exist.");
-                        }
-                    }
-                }
-            }
-            catch (SqlException ex)
-            {
-                Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                throw;
-            }
-        }
-
         /// <summary>
         /// We update the event based on the eventId provided in the input.
         /// </summary>
@@ -219,7 +230,6 @@ namespace QuatroCleanUpBackend
                                     EndTime = @EndTime,
                                     FamilyFriendly = @FamilyFriendly,
                                     Participants = @Participants,
-                                    PictureId = @PictureId,
                                     TrashCollected = @TrashCollected,
                                     StatusId = @StatusId,
                                     LocationId = @LocationId
@@ -234,10 +244,10 @@ namespace QuatroCleanUpBackend
                     command.Parameters.AddWithValue("@EndTime", eventUpdate.EndTime);
                     command.Parameters.AddWithValue("@FamilyFriendly", eventUpdate.FamilyFriendly);
                     command.Parameters.AddWithValue("@Participants", eventUpdate.Participants);
-                    command.Parameters.AddWithValue("@PictureId", eventUpdate.PictureId is not null ? eventUpdate.PictureId : DBNull.Value);
                     command.Parameters.AddWithValue("@TrashCollected", eventUpdate.TrashCollected);
                     command.Parameters.AddWithValue("@StatusId", eventUpdate.StatusId);
                     command.Parameters.AddWithValue("@LocationId", eventUpdate.LocationId);
+                    command.Parameters.AddWithValue("@EventId", eventUpdate.EventId);
 
 
                     await connection.OpenAsync();
@@ -252,6 +262,10 @@ namespace QuatroCleanUpBackend
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
                 throw;
             }
@@ -294,6 +308,10 @@ namespace QuatroCleanUpBackend
             }
             catch(Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
                 throw;
             }

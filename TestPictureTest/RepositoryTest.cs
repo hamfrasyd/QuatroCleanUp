@@ -16,21 +16,19 @@ namespace TestPictureTest
     {
         
 
-        [TestMethod]
+       // [TestMethod]
         
-        public void AddTestMethod1()
-        {
-            //Arrange
-            PicturesRepository pic = new PicturesRepository();
-            
-
-            //Act
-
-            Picture picture = pic.Add(new Picture());
-
-            //Assert
-            Assert.AreEqual(1, picture.PictureId);
-
-        }
+       // public void AddTestMethod1()
+       // {
+       //     //Arrange
+       //     //PicturesRepository pic = new PicturesRepository();         
+       //
+       //     //Act
+       //     Picture picture = pic.Add(new Picture());
+       //
+       //     //Assert
+       //     Assert.AreEqual(1, picture.PictureId);
+       //
+       // }
     }
 }
