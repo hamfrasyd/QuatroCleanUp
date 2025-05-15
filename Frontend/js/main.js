@@ -1,5 +1,5 @@
 
-const baseUri = "https://localhost:7124/api/Event"
+const baseUri = "http://quatro-api.mbuzinous.com/api/events"
 
 //create en vueapp og tilføj en dataproporty
 const app = Vue.createApp({
