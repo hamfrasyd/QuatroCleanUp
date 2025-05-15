@@ -21,9 +21,9 @@ namespace QuatroCleanUpApi.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAsync()
         {
-            List<Picture> pictureList = _repo.GetAll();
+            List<Picture> pictureList = await _repo.GetAllAsync();
             if (pictureList.Count == 0)
             {
                 return NoContent(); //204 - kan også bruge NotFound(); 404
@@ -39,16 +39,16 @@ namespace QuatroCleanUpApi.Controllers
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             try
             {
-                Picture p = _repo.GetById(id);
+                Picture p = await _repo.GetByIdAsync(id);
                 return Ok(p);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound(); //404
+                return NotFound(); //404  
             }
         }
 
@@ -56,15 +56,11 @@ namespace QuatroCleanUpApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Post([FromBody]Picture picture)
+        public async Task<IActionResult> PostAsync([FromBody]Picture picture)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState); // <- giver dig præcis fejl
-            }
             try
             {
-                Picture p = _repo.Add(picture);
+                Picture p = await _repo.AddAsync(picture);
                 return Created("api/pictures/" + p.PictureId, p);
             }
             catch (ArgumentException ex)
@@ -79,16 +75,16 @@ namespace QuatroCleanUpApi.Controllers
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {
-                Picture p = _repo.Delete(id);
+                Picture p = await _repo.DeleteAsync(id);
                 return Ok(p);
             }
             catch (KeyNotFoundException)
             {
-                return NotFound();
+                return NotFound(); 
             }
         }
     }
