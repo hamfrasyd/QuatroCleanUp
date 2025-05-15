@@ -29,59 +29,6 @@ namespace QuatroCleanUpBackend
 
 
         /// <summary>
-        /// In this method we create a new Event, using SqlConnection & SqlCommand and return the Event upon success
-        /// </summary>
-        /// <param name="newEvent"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// I have downloaded the Microsoft.Data.SqlClient package, because it is the
-        /// newer version.
-        /// https://blog.danskingdom.com/Updating-from-System-Data-SqlClient-to-Microsoft-Data-SqlClient/</remarks>
-        public async Task<Event> CreateEventAsync(Event newEvent)
-        {
-            //Event createEvent = newEvent;
-            //Validate: positive number, DateTime, NotNull, minimumLengthString, 
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                try
-                {
-                    string SqlQuery = @"INSERT INTO Events (Title, Description, StartTime, EndTime, FamilyFriendly, Participants, TrashCollected, StatusId, LocationId)
-                                    VALUES (@Title, @Description, @StartTime, @EndTime, @FamilyFriendly, @Participants, @TrashCollected, @StatusId, @LocationId); SELECT SCOPE_IDENTITY()";
-
-                    SqlCommand command = new SqlCommand(SqlQuery, connection);
-                    command.Parameters.AddWithValue("@Title", newEvent.Title);
-                    command.Parameters.AddWithValue("@Description", newEvent.Description);
-                    command.Parameters.AddWithValue("@StartTime", newEvent.StartTime);
-                    command.Parameters.AddWithValue("@EndTime", newEvent.EndTime);
-                    command.Parameters.AddWithValue("@FamilyFriendly", newEvent.FamilyFriendly);
-                    command.Parameters.AddWithValue("@Participants", newEvent.Participants);
-                    command.Parameters.AddWithValue("@TrashCollected", newEvent.TrashCollected);
-                    command.Parameters.AddWithValue("@StatusId", newEvent.StatusId);
-                    command.Parameters.AddWithValue("@LocationId", newEvent.LocationId);
-
-                    await connection.OpenAsync();
-                    var fetchId = await command.ExecuteScalarAsync(); //ExecuteScalarAsync returns object
-
-                    newEvent.EventId = Convert.ToInt32(fetchId); //therefore we convert the fetchedId to int.
-                    return newEvent;
-                }
-                catch (SqlException ex)
-                {
-                    Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                    throw;
-                }
-
-            }         
-
-        }
-
-        /// <summary>
         /// In this method we get all event objects from the Events table in the SQL.
         /// We use the ExecuteReaderAsync instead of ExecuteScalarAsync, because we don't need to query, but
         /// rather need to fetch all the events we can. ExecuteReader returns a SqlDataReader, which reads the table
@@ -128,13 +75,18 @@ namespace QuatroCleanUpBackend
             }
             catch (SqlException ex)
             {
-                Console.Error.WriteLine($"");
-                throw;
+                Console.Error.WriteLine($"{ex.Message}");
+                throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"");
-                throw;
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
+                    throw new Exception(ex.InnerException.Message);
+                }
+                Console.Error.WriteLine($"Could not get all events");
+                throw new Exception(ex.Message);
             }
 
         }
@@ -185,16 +137,79 @@ namespace QuatroCleanUpBackend
             catch (SqlException ex)
             {
                 Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                if(ex.InnerException != null)
+                {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
+                    throw new Exception(ex.InnerException.Message);
+                }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
         }
 
+
+
+        /// <summary>
+        /// In this method we create a new Event, using SqlConnection & SqlCommand and return the Event upon success
+        /// </summary>
+        /// <param name="newEvent"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// I have downloaded the Microsoft.Data.SqlClient package, because it is the
+        /// newer version.
+        /// https://blog.danskingdom.com/Updating-from-System-Data-SqlClient-to-Microsoft-Data-SqlClient/</remarks>
+        public async Task<Event> CreateEventAsync(Event newEvent)
+        {
+            //Event createEvent = newEvent;
+            //Validate: positive number, DateTime, NotNull, minimumLengthString, 
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    string SqlQuery = @"INSERT INTO Events (Title, Description, StartTime, EndTime, FamilyFriendly, Participants, TrashCollected, StatusId, LocationId)
+                                    VALUES (@Title, @Description, @StartTime, @EndTime, @FamilyFriendly, @Participants, @TrashCollected, @StatusId, @LocationId); SELECT SCOPE_IDENTITY()";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@Title", newEvent.Title);
+                    command.Parameters.AddWithValue("@Description", newEvent.Description);
+                    command.Parameters.AddWithValue("@StartTime", newEvent.StartTime);
+                    command.Parameters.AddWithValue("@EndTime", newEvent.EndTime);
+                    command.Parameters.AddWithValue("@FamilyFriendly", newEvent.FamilyFriendly);
+                    command.Parameters.AddWithValue("@Participants", newEvent.Participants);
+                    command.Parameters.AddWithValue("@TrashCollected", newEvent.TrashCollected);
+                    command.Parameters.AddWithValue("@StatusId", newEvent.StatusId);
+                    command.Parameters.AddWithValue("@LocationId", newEvent.LocationId);
+
+                    await connection.OpenAsync();
+                    var fetchId = await command.ExecuteScalarAsync(); //ExecuteScalarAsync returns object
+
+                    newEvent.EventId = Convert.ToInt32(fetchId); //therefore we convert the fetchedId to int.
+                    return newEvent;
+                }
+                catch (SqlException ex)
+                {
+                    Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                    throw new Exception(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
+                        throw new Exception(ex.InnerException.Message);
+                    }
+                    Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                    throw new Exception(ex.Message);
+                }
+
+            }
+
+        }
         /// <summary>
         /// We update the event based on the eventId provided in the input.
         /// </summary>
@@ -235,6 +250,7 @@ namespace QuatroCleanUpBackend
                     command.Parameters.AddWithValue("@TrashCollected", eventUpdate.TrashCollected);
                     command.Parameters.AddWithValue("@StatusId", eventUpdate.StatusId);
                     command.Parameters.AddWithValue("@LocationId", eventUpdate.LocationId);
+                    command.Parameters.AddWithValue("@EventId", eventUpdate.EventId);
 
 
                     await connection.OpenAsync();
@@ -245,12 +261,17 @@ namespace QuatroCleanUpBackend
             catch (SqlException ex)
             {
                 Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
+                    throw new Exception(ex.InnerException.Message);
+                }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
 
            
@@ -287,12 +308,17 @@ namespace QuatroCleanUpBackend
             catch(SqlException ex)
             {
                 Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
             catch(Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
+                    throw new Exception(ex.InnerException.Message);
+                }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
 
         }

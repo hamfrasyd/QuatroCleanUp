@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 
 
-
 namespace QuatroCleanUpBackend
 {
     public class PicturesRepository
