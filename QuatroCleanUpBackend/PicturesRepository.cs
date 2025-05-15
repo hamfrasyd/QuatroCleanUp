@@ -38,6 +38,10 @@ namespace QuatroCleanUpBackend
             }
             catch(Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
                 throw new Exception(ex.Message);
             }
 
@@ -78,6 +82,10 @@ namespace QuatroCleanUpBackend
             }
             catch(Exception ex)
             {
+                if(ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
                 throw new Exception(ex.Message);
             }
 
@@ -121,6 +129,10 @@ namespace QuatroCleanUpBackend
             }
             catch(Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
                 throw new Exception(ex.Message);
             }
             
@@ -152,6 +164,10 @@ namespace QuatroCleanUpBackend
             }
             catch(Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
                 throw new Exception(ex.Message);
             }
         }

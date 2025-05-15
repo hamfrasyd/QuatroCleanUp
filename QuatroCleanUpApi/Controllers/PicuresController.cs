@@ -9,11 +9,13 @@ namespace QuatroCleanUpApi.Controllers
     [ApiController]
     public class PicuresController : ControllerBase
     {
-
+        private ILogger _logger;
         private readonly PicturesRepository _repo;
-        public PicuresController(PicturesRepository repo)
+        public PicuresController(PicturesRepository repo, ILogger<PicuresController> logger)
         {
             _repo = repo;
+            _logger = logger;
+
         }
 
 
@@ -23,14 +25,23 @@ namespace QuatroCleanUpApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> GetAsync()
         {
-            List<Picture> pictureList = await _repo.GetAllAsync();
-            if (pictureList.Count == 0)
+            try
             {
-                return NoContent(); //204 - kan også bruge NotFound(); 404
+                List<Picture> pictureList = await _repo.GetAllAsync();
+                if (pictureList.Count == 0)
+                {
+                    return NoContent(); //204 - kan også bruge NotFound(); 404
+                }
+                else
+                {
+                    return Ok(pictureList); //ok returnere 200
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Ok(pictureList); //ok returnere 200
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
 
@@ -46,9 +57,16 @@ namespace QuatroCleanUpApi.Controllers
                 Picture p = await _repo.GetByIdAsync(id);
                 return Ok(p);
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
+                _logger.LogError(ex.Message);
                 return NotFound(); //404  
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
 
@@ -65,7 +83,15 @@ namespace QuatroCleanUpApi.Controllers
             }
             catch (ArgumentException ex)
             {
+                _logger.LogError(ex.Message);
+
                 return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
 
@@ -82,9 +108,16 @@ namespace QuatroCleanUpApi.Controllers
                 Picture p = await _repo.DeleteAsync(id);
                 return Ok(p);
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex)
             {
+                _logger.LogError(ex.Message);
                 return NotFound(); 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+
             }
         }
     }
