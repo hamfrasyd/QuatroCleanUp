@@ -1,9 +1,11 @@
 ﻿using QuatroCleanUpBackend;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 
 namespace QuatroCleanUpApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/event")]
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -11,42 +13,70 @@ namespace QuatroCleanUpApi.Controllers
 
         private readonly EventRepository _eventRepository;
 
-        public EventController(EventRepository eventRepository) //Dependency Inject the repository class
+        private readonly ILogger<EventController> _logger;
+
+        public EventController(EventRepository eventRepository, ILogger<EventController> logger) //Dependency Inject the repository class
         {
             _eventRepository = eventRepository;
+            _logger = logger;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAsync()
         {
-            var eventList = await _eventRepository.GetAllAsync();
+            try
+            {
+                var eventList = await _eventRepository.GetAllAsync();
 
-            if(eventList.Count == 0 || eventList is null)
-            {
-                return NoContent();
+                if (eventList is null || eventList.Count == 0)
+                {
+                    return NoContent(); //204  - kan også bruge NotFound(); 404
+                }
+                else
+                {
+                    return Ok(eventList);
+                }
             }
-            else
+            catch(SqlException ex)
             {
-                return Ok();
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
             }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             try
             {
-                var e = await _eventRepository.GetByIdAsync(id);
+                Event e = await _eventRepository.GetByIdAsync(id);
                 return Ok(e);
             }
-            catch (KeyNotFoundException KeyNotFoundException)
+            catch (InvalidOperationException iOE)
             {
-                return NotFound();
+                _logger.LogError(iOE.Message, "Error GetById event");
+                return NotFound(iOE.Message);
+            }
+            catch (SqlException ex)
+            {
+                _logger.LogError(ex.Message, "Error GetById event");
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error GetById event");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -69,9 +99,15 @@ namespace QuatroCleanUpApi.Controllers
                 Event e = await _eventRepository.CreateEventAsync(newEvent);
                 return Created("api/Events" + e.EventId, e);
             }
-            catch(ArgumentException ae)
+            catch (SqlException ex)
             {
-                return BadRequest(ae.Message);
+                _logger.LogError(ex.Message, "Error fetching event");
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error fetching event");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -81,21 +117,33 @@ namespace QuatroCleanUpApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put(int id, Event eventUpdate)
+        public async Task<IActionResult> Put(int id, [FromBody] Event eventUpdate)
         {
             try
             {
                 Event newEventUpdate = await _eventRepository.UpdateEventAsync(eventUpdate);
+                if (eventUpdate == null)
+                {
+                    return NotFound($"Event with ID {id} not found.");
+                }
                 return Ok(newEventUpdate);
             }
-            catch(ArgumentException argumentE)
+            catch (ArgumentNullException ex)
             {
-                return BadRequest();
+                _logger.LogError(ex.Message, "Error update event");
+                return BadRequest(ex.Message);
             }
-            catch(KeyNotFoundException keyNotFoundExeption)
+            catch (SqlException ex)
             {
-                return NotFound();
+                _logger.LogError(ex.Message, "Error update event");
+                return BadRequest(ex.Message);
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error update event");
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpDelete]
@@ -109,9 +157,21 @@ namespace QuatroCleanUpApi.Controllers
                 var returnEvent = await _eventRepository.DeleteEventAsync(id);
                 return Ok(returnEvent);
             }
-            catch(KeyNotFoundException keyNotFoundException)
+            catch(ArgumentNullException ex)
             {
-                return NotFound();
+                _logger.LogError(ex.Message, "Error on delete event");
+                return NotFound(ex.Message);
+            }
+            catch(SqlException ex)
+            {
+                _logger.LogError(ex.Message, "Error on delete event");
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, "Error on delete event.");
+                return BadRequest(ex.Message);
+
             }
         }
 
