@@ -3,25 +3,62 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Events</title>
     <link rel="stylesheet" href="./css/styles.css" />
     <!-- TODO: Import Vue.js core library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
     <div id="app">
-        <h1>{{Event}}</h1>
+        <h1>{{intro}}</h1>
 
+        <input v-model="title" placeholder="title">
+        <br>
+        <input v-model="description" placeholder="description">
+        <br>
+        <input v-model="startTime" type="datetime-local" id="startTime" name="startTime">
+        <br>
+        <input v-model="endTime" type="datetime-local" id="endTime" name="endTime">
+        <br>
+        <label for="familyFriendly">Family Friendly:</label>
+        <input type="checkbox" v-model="familyFriendly" name="familyFriendly">
+        <br>
+        <input v-model="participants" placeholder="participants">
+        <br>
+        <input v-model="trashCollected" placeholder="trashCollected">
+        <br>
+        <input v-model="statusId" placeholder="statusId">
+        <br>
+        <input v-model="locationId" placeholder="locationId">
+        <br>
+
+        <button v-on:click="createEvent" >Create Event</button>
+
+        <div>
+            {{title}}
+            {{description}}
+            {{startTime}}
+            {{endTime}}
+            {{familyFriendly}}
+            {{participants}}
+            {{trashCollected}}
+            {{statusId}}
+            {{locationId}}
+          </div>
+    
+          <h1>status : {{statuskode}}</h1>
     </div>
 
 
     <!--import app-->
-    <script> src="./js/main.js"</script>
+    <script src="./js/main.js"></script>
 
     <!--mount app-->
     <script>
         const mountedApp = app.mount('#app')
     </script>
-    <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+    
 </body>
 </html>

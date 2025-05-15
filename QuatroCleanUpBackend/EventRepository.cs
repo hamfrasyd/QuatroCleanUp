@@ -75,16 +75,17 @@ namespace QuatroCleanUpBackend
             }
             catch (SqlException ex)
             {
-                Console.Error.WriteLine($"");
+                Console.Error.WriteLine($"{ex.Message}");
                 throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
                 if (ex.InnerException != null)
                 {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
                     throw new Exception(ex.InnerException.Message);
                 }
-                Console.Error.WriteLine($"");
+                Console.Error.WriteLine($"Could not get all events");
                 throw new Exception(ex.Message);
             }
 
@@ -128,7 +129,7 @@ namespace QuatroCleanUpBackend
                         }
                         else
                         {
-                            throw new InvalidOperationException($"Event with Id {id} does not exist.");
+                            throw new KeyNotFoundException($"Event with Id {id} does not exist.");
                         }
                     }
                 }
@@ -136,16 +137,17 @@ namespace QuatroCleanUpBackend
             catch (SqlException ex)
             {
                 Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
                 if(ex.InnerException != null)
                 {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
                     throw new Exception(ex.InnerException.Message);
                 }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -192,16 +194,17 @@ namespace QuatroCleanUpBackend
                 catch (SqlException ex)
                 {
                     Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                    throw;
+                    throw new Exception(ex.Message);
                 }
                 catch (Exception ex)
                 {
                     if (ex.InnerException != null)
                     {
+                        Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
                         throw new Exception(ex.InnerException.Message);
                     }
                     Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                    throw;
+                    throw new Exception(ex.Message);
                 }
 
             }
@@ -258,16 +261,17 @@ namespace QuatroCleanUpBackend
             catch (SqlException ex)
             {
                 Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
             catch (Exception ex)
             {
                 if (ex.InnerException != null)
                 {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
                     throw new Exception(ex.InnerException.Message);
                 }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
 
            
@@ -304,16 +308,17 @@ namespace QuatroCleanUpBackend
             catch(SqlException ex)
             {
                 Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
             catch(Exception ex)
             {
                 if (ex.InnerException != null)
                 {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
                     throw new Exception(ex.InnerException.Message);
                 }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
-                throw;
+                throw new Exception(ex.Message);
             }
 
         }

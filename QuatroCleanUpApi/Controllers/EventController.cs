@@ -5,7 +5,8 @@ using Microsoft.Extensions.Logging;
 
 namespace QuatroCleanUpApi.Controllers
 {
-    [Route("api/event")]
+    [Route("api/events")]
+
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -113,7 +114,7 @@ namespace QuatroCleanUpApi.Controllers
 
 
         [HttpPut]
-        [Route("{EventId}")] 
+        [Route("{id}")] 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
