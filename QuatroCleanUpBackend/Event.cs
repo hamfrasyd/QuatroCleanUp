@@ -30,6 +30,11 @@
             LocationId = locationId;
         }
 
+        public Event()
+        {
+        
+        }
+
         public override string ToString()
         {
             return $"The event's Id {EventId}." +
