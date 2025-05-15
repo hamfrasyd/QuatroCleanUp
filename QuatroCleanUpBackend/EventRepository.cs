@@ -46,8 +46,8 @@ namespace QuatroCleanUpBackend
             {
                 try
                 {
-                    string SqlQuery = @"INSERT INTO Events (Title, Description, StartTime, EndTime, FamilyFriendly, Participants, PictureId, TrashCollected, StatusId, LocationId)
-                                    VALUES (@Title, @Description, @StartTime, @EndTime, @FamilyFriendly, @Participants, @PictureId, @TrashCollected, @StatusId, @LocationId); SELECT SCOPE_IDENTITY()";
+                    string SqlQuery = @"INSERT INTO Events (Title, Description, StartTime, EndTime, FamilyFriendly, Participants, TrashCollected, StatusId, LocationId)
+                                    VALUES (@Title, @Description, @StartTime, @EndTime, @FamilyFriendly, @Participants, @TrashCollected, @StatusId, @LocationId); SELECT SCOPE_IDENTITY()";
 
                     SqlCommand command = new SqlCommand(SqlQuery, connection);
                     command.Parameters.AddWithValue("@Title", newEvent.Title);
@@ -56,7 +56,6 @@ namespace QuatroCleanUpBackend
                     command.Parameters.AddWithValue("@EndTime", newEvent.EndTime);
                     command.Parameters.AddWithValue("@FamilyFriendly", newEvent.FamilyFriendly);
                     command.Parameters.AddWithValue("@Participants", newEvent.Participants);
-                    command.Parameters.AddWithValue("@PictureId", newEvent.PictureId);
                     command.Parameters.AddWithValue("@TrashCollected", newEvent.TrashCollected);
                     command.Parameters.AddWithValue("@StatusId", newEvent.StatusId);
                     command.Parameters.AddWithValue("@LocationId", newEvent.LocationId);
@@ -117,7 +116,7 @@ namespace QuatroCleanUpBackend
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
                                 Participants = (int)reader["Participants"],
-                                PictureId = (byte[])reader["PictureId"],
+                                PictureId = reader["PictureId"] != DBNull.Value ? (byte[])reader["PictureId"] : null,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
@@ -171,7 +170,7 @@ namespace QuatroCleanUpBackend
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
                                 Participants = (int)reader["Participants"],
-                                PictureId = (byte[])reader["PictureId"],
+                                PictureId = reader["PictureId"] != DBNull.Value ? (byte[])reader["PictureId"] : null,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
@@ -235,7 +234,7 @@ namespace QuatroCleanUpBackend
                     command.Parameters.AddWithValue("@EndTime", eventUpdate.EndTime);
                     command.Parameters.AddWithValue("@FamilyFriendly", eventUpdate.FamilyFriendly);
                     command.Parameters.AddWithValue("@Participants", eventUpdate.Participants);
-                    command.Parameters.AddWithValue("@PictureId", eventUpdate.PictureId);
+                    command.Parameters.AddWithValue("@PictureId", eventUpdate.PictureId is not null ? eventUpdate.PictureId : DBNull.Value);
                     command.Parameters.AddWithValue("@TrashCollected", eventUpdate.TrashCollected);
                     command.Parameters.AddWithValue("@StatusId", eventUpdate.StatusId);
                     command.Parameters.AddWithValue("@LocationId", eventUpdate.LocationId);
