@@ -1,52 +1,34 @@
 
-const baseUri = "http://quatro-api.mbuzinous.com/api/events"
+const eventBaseUri = "http://quatro-api.mbuzinous.com/api/events"
 
 //create en vueapp og tilføj en dataproporty
 const app = Vue.createApp({
     data() {
         return {
-            intro: "Lav et nyt event",
-            eventId: 0,
-            title: "",
-            description:"",
-            startTime:"",
-            endTime:"",
-            familyFriendly: false,
-            participants: "",
-            trashCollected: "",
-            statusId: "",
-            locationId: "",
-            statuskode:"",
+            selectedEventId: null
         }
     },
+
+
     methods: {
-        createEvent(){
-            axios.post(baseUri, {
-                eventId: this.eventId,
-                title: this.title,
-                description: this.description,
-                startTime: this.startTime,
-                endTime: this.endTime,
-                familyFriendly: this.familyFriendly,
-                participants: parseInt(this.participants),  
-                trashCollected: parseInt(this.trashCollected),
-                statusId: parseInt(this.statusId),
-                locationId: parseInt(this.locationId),
-            })
-            .then(response => {
-                this.statuskode = response.status
-            })
-            .catch(error => {
-                this.statuskode = error.response?.status || "Fejl"
-                console.log("Fejl i createEvent", error)
-            })
+ndleDelete(id){
+            console.log("Skal slette event med ID:", id);
+            this.selectedEventId = id;
+            console.log("Efter sætning, selectedEventId er:", this.selectedEventId);
+        },
+        refreshList() {
+            this.selectedEventId = null; // reset knappen
+            this.$refs.eventListComponent.GetAllEvent(); // kald metoden igen
         }
     },
+
+
     computed: {
         myComputed() {
             return ''
         }
     }
+
 })
 
 
