@@ -8,7 +8,7 @@ app.component('picture-upload', {
       <br/>
       <input type="text" v-model="description" placeholder="Description (Not required)" />
       <br/>
-      <button @click="uploadPicture">Upload</button>
+      <button @click="uploadPictureAsync">Upload</button>
       <br/>
       <p v-if="selectedImageFile">Selected file: {{ selectedImageFile.name }}</p>
       <img v-if="previewImageUrl" :src="previewImageUrl" style="width: 20%; height: 20%;" />
@@ -53,9 +53,9 @@ app.component('picture-upload', {
       };
       reader.readAsDataURL(imageFile );
     },
-    uploadPicture() {
+    async uploadPictureAsync() {
       if (!this.pictureDataBase64String) {
-        this.statusMessage = 'Please select and load a file first.';
+        this.statusMessage = 'Please select and load a file first.'; 
         return;
       }
       // Byg det JSON-objekt, som Picture-klassen forventer
@@ -64,7 +64,7 @@ app.component('picture-upload', {
         pictureData: this.pictureDataBase64String,
         description: this.description.trim() || 'No description'
       };
-        axios.post(pictureApiUrl+'/pictures', pictureDTO)
+        await axios.post(pictureApiUrl+'/pictures', pictureDTO)
         .then(response => 
         {
              console.log("File uploaded successfully! Status code: " + response.status + " Response Data: " + response.data);
