@@ -1,85 +1,93 @@
+const pictureApiUrl = 'http://quatro-api.mbuzinous.com/api'
+
 app.component('picture-upload', {
   template: `
-    <div>
+    <div class="picture-upload"> 
       <h2>Upload Picture</h2>
-      <input type="file" @change="onFileChange" accept="image/*" />
-      <input type="text" v-model="description" placeholder="Description" />
-
+      <input type="file" @change="handleFileSelection" accept="image/*" />
+      <br/>
+      <input type="text" v-model="description" placeholder="Description (Not required)" />
+      <br/>
       <button @click="uploadPicture">Upload</button>
-
-      <p v-if="selectedFile">Selected file: {{ selectedFile.name }}</p>
-      <img v-if="previewUrl" :src="previewUrl" class="w-32 h-auto my-2" />
+      <br/>
+      <p v-if="selectedImageFile">Selected file: {{ selectedImageFile.name }}</p>
+      <img v-if="previewImageUrl" :src="previewImageUrl" style="width: 20%; height: 20%;" />
       <p v-if="statusMessage">{{ statusMessage }}</p>
     </div>
   `,
   data() {
     return {
       eventId: 5,               // eller bind via prop
-      description: '',          
-      selectedFile: null,
-      previewUrl: null,
-      pictureData: null,        // base64-streng uden prefix
+      description: '',   
+      pictureDataBase64String: null,        // base64-streng uden prefix
+      selectedImageFile: null,
+      previewImageUrl: null,
       statusMessage: ''
     };
   },
   methods: {
-    onFileChange(e) {
-      const file = e.target.files[0];
-      if (!file) {
-        this.selectedFile = null;
-        this.previewUrl = null;
-        this.pictureData = null;
+    handleFileSelection(imageInputEvent) {
+      const imageFile  = imageInputEvent.target.files[0];
+      this.statusMessage = null;
+
+      if (!imageFile) {
+        // No file chosen → clear everything
+        this.selectedImageFile = null;
+        this.previewImageUrl = null;
+        this.imageBase64Data = null;
         return;
       }
-      this.selectedFile = file;
+
+      this.selectedImageFile = imageFile ;
       // Preview
-      this.previewUrl = URL.createObjectURL(file);
+      this.previewImageUrl = URL.createObjectURL(imageFile );
 
       // Read som DataURL og strip prefix
       const reader = new FileReader();
       reader.onload = () => {
         // reader.result er f.eks. "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
         const dataUrl = reader.result;
+        // DataURL format is "data:image/png;base64,iVBORw..."
         const base64 = dataUrl.split(',')[1];
-        this.pictureData = base64;
+        this.pictureDataBase64String = base64;
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(imageFile );
     },
-
-    async uploadPicture() {
-      if (!this.pictureData) {
+    uploadPicture() {
+      if (!this.pictureDataBase64String) {
         this.statusMessage = 'Please select and load a file first.';
         return;
       }
       // Byg det JSON-objekt, som Picture-klassen forventer
-      const payload = {
+      const pictureDTO = {
         eventId: this.eventId,
-        pictureData: this.pictureData,
+        pictureData: this.pictureDataBase64String,
         description: this.description.trim() || 'No description'
       };
-
-      try {
-        const response = await axios.post(
-          'http://quatro-api.mbuzinous.com/api/pictures',
-          payload,
-          { headers: { 'Content-Type': 'application/json' } }
-        );
-        this.statusMessage = 'File uploaded successfully!';
-        console.log('Response:', response.data);
+        axios.post(pictureApiUrl+'/pictures', pictureDTO)
+        .then(response => 
+        {
+             console.log("File uploaded successfully! Status code: " + response.status + " Response Data: " + response.data);
+             this.statusMessage = "File uploaded successfully!"
+        })
+        .catch(error => {
+             this.statusMessage = "Status code: " + response.status + " Error Message: " + error.message
+             console.log("Status code: " + response.status + " Error Message: " + error.message);   
+        })
         // Reset efter upload
-        this.selectedFile = null;
-        this.previewUrl = null;
-        this.pictureData = null;
+        this.selectedImageFile = null;
+        this.previewImageUrl = null;
+        this.pictureDataBase64String = null;
         this.description = '';
-      } catch (err) {
-        this.statusMessage = 'Error uploading file: ' + (err.response?.data || err.message);
-        console.error(err);
-      }
     }
   },
+  /*
+    In case parent unmounts us while a preview is active:
+    clean up the object URL to avoid memory leaks.
+  */
   beforeUnmount() {
-    if (this.previewUrl) {
-      URL.revokeObjectURL(this.previewUrl);
+    if (this.previewImageUrl) {
+      URL.revokeObjectURL(this.previewImageUrl);
     }
   }
 });
