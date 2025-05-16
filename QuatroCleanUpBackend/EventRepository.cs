@@ -120,11 +120,10 @@ namespace QuatroCleanUpBackend
                                 StartTime = (DateTime)reader["StartTime"],
                                 EndTime = (DateTime)reader["EndTime"],
                                 FamilyFriendly = (bool)reader["FamilyFriendly"],
-                                Participants = (int)reader["Participants"],
+                                Participants = reader["Participants"] != DBNull.Value ? (int)reader["Participants"] : 0,
                                 TrashCollected = (decimal)reader["TrashCollected"],
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
-
                             };
                         }
                         else

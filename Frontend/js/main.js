@@ -11,7 +11,7 @@ const app = Vue.createApp({
 
 
     methods: {
-        handleDelete(id){
+ndleDelete(id){
             console.log("Skal slette event med ID:", id);
             this.selectedEventId = id;
             console.log("Efter sætning, selectedEventId er:", this.selectedEventId);
