@@ -96,8 +96,8 @@ app.component('picture-upload', {
             this.statusMessage = "File uploaded successfully!"
       })
       .catch(error => {
-            this.statusMessage = "Status code: " + response.status + " Error Message: " + error.message
-            console.log("Status code: " + response.status + " Error Message: " + error.message);   
+            this.statusMessage = "Status code: " + error.response.status + " Error Message: " + error.message
+            console.log("Status code: " + error.response.status + " Error Message: " + error.message);   
       })
       
       // 5. Reset efter upload
