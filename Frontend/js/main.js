@@ -8,10 +8,8 @@ const app = Vue.createApp({
             selectedEventId: null
         }
     },
-
-
     methods: {
-ndleDelete(id){
+    handleDelete(id){
             console.log("Skal slette event med ID:", id);
             this.selectedEventId = id;
             console.log("Efter sætning, selectedEventId er:", this.selectedEventId);
@@ -21,14 +19,11 @@ ndleDelete(id){
             this.$refs.eventListComponent.GetAllEvent(); // kald metoden igen
         }
     },
-
-
     computed: {
         myComputed() {
             return ''
         }
     }
-
 })
 
 

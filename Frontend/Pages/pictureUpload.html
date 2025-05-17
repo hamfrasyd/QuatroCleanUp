@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Events</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <!-- Import bootstrap css CDN-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <!-- TODO: Import Vue.js core library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app" class="p-4">        
+        <div class="mb-3">
+            <a href="index.html" class="btn btn-dark py-1">← Go back to Events Page</a>
+        </div>
+
+        <picture-upload></picture-upload>
+   
+    </div>
+    <!--import app-->
+    <script src="/Frontend/js/main.js"></script>
+      <script src="/Frontend/js/Components/Pictures/UploadPicture.js"></script>
+
+
+    <!--mount app-->
+    <script>
+        const mountedApp = app.mount('#app')
+    </script>
+    
+</body>
+</html>
