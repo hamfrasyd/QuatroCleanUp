@@ -125,6 +125,8 @@ app.component('event-create', {
         }
     },
     computed: {
+        // bruger denne til tjeke automatisk hvad status kode vi får tilbage fra api'en
+        // og retunere css bootstrap class til Alert box, hvis alt går godt er den grøn, hvis skidt så rød osv..
         alertClass() {
             const code = parseInt(this.statuscode)
             if (code >= 200 && code < 300){
