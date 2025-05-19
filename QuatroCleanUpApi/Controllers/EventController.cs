@@ -64,12 +64,12 @@ namespace QuatroCleanUpApi.Controllers
                 Event e = await _eventRepository.GetByIdAsync(id);
                 return Ok(e);
             }
-            catch (InvalidOperationException iOE)
+            catch (KeyNotFoundException keyNotFoundEx)
             {
-                _logger.LogError(iOE.Message, "Error GetById event");
-                return NotFound(iOE.Message);
+                _logger.LogError(keyNotFoundEx.Message, "Error GetById event");
+                return NotFound(keyNotFoundEx.Message);
             }
-            catch (SqlException ex)
+            catch (SqlException ex) //overvej at gøre til DbException?
             {
                 _logger.LogError(ex.Message, "Error GetById event");
                 return NotFound(ex.Message);
