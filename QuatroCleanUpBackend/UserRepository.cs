@@ -1,6 +1,14 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Security.Principal;
+using System.Text;
+using System.Threading.Tasks;
+using Azure.Core;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 
 namespace QuatroCleanUpBackend
 {
@@ -8,114 +16,232 @@ namespace QuatroCleanUpBackend
     {
         private readonly string _connectionString;
 
+        /// <summary>
+        /// Installed the following package to use the IConfiguration framwork 
+        /// microsoft extension configuration
+        /// </summary>
+        /// <param name="configuration"></param>
         public UserRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("QuatroCleanUpDb");
 
         }
 
-        public void CreateUser(User user)
+        public UserRepository()
         {
-            ValidateMethodForUser.ValidateUser(user);
-            using( var connection = new SqlConnection(_connectionString))
-            {
-                var query = "INSERT INTO Users (Name, Email, Password) VALUES (@Name, @Email, @Password)";
-                var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Name", user.Name);
-                command.Parameters.AddWithValue("@Email", user.Email);
-                command.Parameters.AddWithValue("@Password", user.Password);
-                connection.Open();
-                command.ExecuteNonQuery();
-            }
         }
 
-        public List<User> GetAll()
+        /// <summary>
+        /// Method to create a new user, using the SqlConnecntion & SqlCommand and return the user upon succes 
+        /// </summary>
+        /// <param name="user"></param>
+        public async Task<User> CreateUserAsync(User newUser)
         {
-            var users = new List<User>();
+            ValidateMethodForUser.ValidateUser(newUser);
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                var query = "SELCET * FROM Users";
-                var command = new SqlCommand(query, connection);
-                connection.Open();
-                using (var reader = command.ExecuteReader())
+                try
                 {
-                    while (reader.Read())
-                    {
-                        var user = new User
-                        {
-                            UserId = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            Email = reader.GetString(2),
-                            Password = reader.GetString(3)
-                        };
-                        users.Add(user);
+                    string SqlQuery = @"INSERT INTO Users (Name, Email, Password, RoleId, CreatedDate, AvatarPictureId)
+                                    VALUES (@Name, @Email, @Password, @RoleId, @CreatedDate, @AvatarPictureId); SELCET SCOPE_IDENTITY();";
 
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@Name", newUser.Name);
+                    command.Parameters.AddWithValue("@Email", newUser.Email);
+                    command.Parameters.AddWithValue("@Password", newUser.Password);
+                    command.Parameters.AddWithValue("@RoleId", newUser.RoleId);
+                    command.Parameters.AddWithValue("@CreatedDate", newUser.CreatedDate);
+                    command.Parameters.AddWithValue("@AvatarPictureId", newUser.AvatarPictureId);
+
+                    await connection.OpenAsync();
+                    var fetchId = await command.ExecuteScalarAsync();
+
+                    newUser.UserId = Convert.ToInt32(fetchId);
+                    return newUser;
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                    throw;
+                }
+
+
+            }
+
+
+        }
+
+        /// <summary>
+        /// Method for getting all user obejct from the Users table i SQL. 
+        /// Using ExecuteReaderAsync instead of ExecuteScalarAsync, because we need alle useres. Et returns a SqlDataReader, which reads the whole table, colums and rows. 
+        /// </summary>
+        /// <returns>Returns a list of Useres</returns>
+        public async Task<List<User>> GetAllAsync()
+        {
+            List<User> userList = new List<User>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = "SELECT * FROM Users";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+
+                    await connection.OpenAsync();
+
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            User newUser = new User
+                            {
+                                UserId = (int)reader["UserId"],
+                                Name = (string)reader["Name"],
+                                Email = (string)reader["Email"],
+                                Password = (string)reader["Password"],
+                                RoleId = (int)reader["RoleId"],
+                                CreatedDate = (DateTime)reader["CreatedDate"],
+                                AvatarPictureId = (int)reader["AvatarPictureId"]
+                            };
+                            userList.Add(newUser);
+                        }
+                    }
+                    return userList;
+                }
+
+            }
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"");
+                throw;
+
+            }
+
+
+        }
+
+        public async Task<User> GetUserByIdAsync(int userId)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = "SELECT * FROM Users WHERE UserId = @UserId";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    await connection.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new User
+                            {
+                                UserId = (int)reader["UserId"],
+                                Name = (string)reader["Name"],
+                                Email = (string)reader["Email"],
+                                Password = (string)reader["Password"],
+                                RoleId = (int)reader["RoleId"],
+                                CreatedDate = (DateTime)reader["CreatedDate"],
+                                AvatarPictureId = (int)reader["AvatarPictureId"],
+                            };
+
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"User with Id {userId} does not exist.");
+                        }
                     }
                 }
+
             }
-            return users;
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw;
+            }
+
+
         }
 
-        public User GetUserById(int userId)
+        public async Task<User> UpdateUserAsync(User userUpdate)
         {
-           using(var connection = new SqlConnection(_connectionString))
+
+            if (userUpdate == null)
             {
-                var query = "SELECT * FROM Users WHERE UserId = @UserId";
-                var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@UserId", userId);
-
-                connection.Open();
-
-                using(var reader = command.ExecuteReader())
+                throw new ArgumentNullException("User not found. Please create a new user");
+            }
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    if (reader.Read())
-                    {
-                        return new User
-                        {
-                            UserId = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            Email = reader.GetString(2),
-                            Password = reader.GetString(3)
-                        };
-                    }
+                    string SqlQuery = @"UPDATE Users SET
+                                     Name = @Name,
+                                     Email = @Email,
+                                     Password = @Password,
+                                     AvatarPictureId = @AvatarPictureId
+                                  WHERE
+                                     UserId = @UserId";
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@UserId", userUpdate.UserId);
+                    command.Parameters.AddWithValue("@Name", userUpdate.Name);
+                    command.Parameters.AddWithValue("@Email", userUpdate.Email);
+                    command.Parameters.AddWithValue("@Password", userUpdate.Password);
+                    command.Parameters.AddWithValue("@AvatarPictureId", userUpdate.AvatarPictureId);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+
                 }
             }
-                return null;            
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+            }
+            return userUpdate;
+
         }
 
-        public User UpdateUser(User user)
+        public async Task<User> DeleteUserAsync(int userId)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            var getUser = await GetUserByIdAsync(userId);
+            if (getUser == null)
             {
-                var query = @"UPDATE Users
-                              SET Name = @Name, Email = @Email, Password = @Password
-                              WHERE UserId = @UserId";
-                        
-                var command = new SqlCommand(query,connection);
-                command.Parameters.AddWithValue("@UserId", user.UserId);
-                command.Parameters.AddWithValue("@Name", user.Name);
-                command.Parameters.AddWithValue("@Email", user.Email);
-                command.Parameters.AddWithValue("@Password", user.Password);
-
-                connection.Open();
-                command.ExecuteNonQuery();
-                
+                throw new ArgumentNullException("This user does not exist");
             }
-            return user;
-        }
-
-        public User DeleteUser(User user)
-        {
-            using (var connection = new SqlConnection(_connectionString))
+            try
             {
-                var query = "DELETE FROM Users WHERE UserId = @UserId";
-                var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@UserId", user.UserId);
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = "DeLETE FROM USers WHERE UserId = @UserId";
 
-                connection.Open();
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                    return getUser;
+                }
             }
-            return null;
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException.Message != null)
+                {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
+                    throw new Exception(ex.InnerException.Message);
+
+                }
+                Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                throw new Exception(ex.Message);
+            }
 
         }
 
