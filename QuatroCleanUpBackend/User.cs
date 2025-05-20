@@ -14,6 +14,18 @@
 
         public DateTime CreatedDate { get; set; }
 
-        public byte[] AvatarPic { get; set; } = null!;
+        public int AvatarPictureId { get; set; }
+        
+
+        public User()
+        {
+            //Default constructor
+        }
+
+
+        public override string ToString()
+        {
+            return $"UserId: {UserId}, RoleId: {RoleId}, Name: {Name}, Email: {Email}, Password: {Password}, CreatedDate: {CreatedDate}, AvatarPic: {AvatarPictureId}";
+        }
     }
 }

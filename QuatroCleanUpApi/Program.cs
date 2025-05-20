@@ -44,9 +44,6 @@ app.MapControllers();
 
 app.Run();
 
-
-
-
 public class Startup
 {
     public Startup(IConfiguration configuration)
@@ -74,7 +71,10 @@ public class Startup
         app.UseEndpoints(endpoints => endpoints.MapControllers());
 
         // Configure PlayFab settings
-        PlayFabSettings.staticSettings.TitleId = "121AD7";
-        PlayFabSettings.staticSettings.DeveloperSecretKey = "TZA9MRKQ5RBGX73WZYJYZ84RCTGES15MD9QDGDN4G4GK3KPEXH";
+
+        PlayFabSettings.staticSettings.TitleId = "1C4FBC";
+        PlayFabSettings.staticSettings.DeveloperSecretKey = "MOAHYJ3HPD5NWU14XAMEX5GMPYXOP3OMKNGX4PRKSZ6RBN3NWP";
     }
+
 }
+
