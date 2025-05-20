@@ -15,6 +15,7 @@
         public DateTime CreatedDate { get; set; }
 
         public int AvatarPictureId { get; set; }
+        
 
         public User()
         {
