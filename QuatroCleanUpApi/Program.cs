@@ -1,4 +1,6 @@
+using PlayFab;
 using QuatroCleanUpBackend;
+using PlayFab;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,3 +43,38 @@ app.UseCors("AllowAny");
 app.MapControllers();
 
 app.Run();
+
+
+
+
+public class Startup
+{
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+        // Add other services as needed
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseRouting();
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+        // Configure PlayFab settings
+        PlayFabSettings.staticSettings.TitleId = "121AD7";
+        PlayFabSettings.staticSettings.DeveloperSecretKey = "TZA9MRKQ5RBGX73WZYJYZ84RCTGES15MD9QDGDN4G4GK3KPEXH";
+    }
+}

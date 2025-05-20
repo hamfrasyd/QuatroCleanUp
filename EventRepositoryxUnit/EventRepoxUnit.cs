@@ -53,30 +53,30 @@ namespace EventRepositoryxUnit
 
         }
 
-        public async Task GetAllAsyncTransactionTest()
-        {
-            using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                EventRepository newRepository = new EventRepository();
-                await newRepository.CreateEventAsync(new Event { Title = "Event 1", StatusId = 1, LocationId = 1 });
-                await newRepository.CreateEventAsync(new Event { Title = "Event 2", StatusId = 1, LocationId = 1 });
+        //public async Task GetAllAsyncTransactionTest()
+        //{
+        //    using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        //    {
+        //        EventRepository newRepository = new EventRepository();
+        //        await newRepository.CreateEventAsync(new Event { Title = "Event 1", StatusId = 1, LocationId = 1 });
+        //        await newRepository.CreateEventAsync(new Event { Title = "Event 2", StatusId = 1, LocationId = 1 });
+        //
+        //        var events = await newRepository.GetAllAsync();
+        //
+        //        Assert.NotNull(events);
+        //        Assert.Equal(2, events.Count());
+        //        Assert.Contains(events, e => e.Title == "Event 1");
+        //        Assert.Contains(events, e => e.Title == "Event 2");
+        //    }
+        //}
 
-                var events = await newRepository.GetAllAsync();
-
-                Assert.NotNull(events);
-                Assert.Equal(2, events.Count());
-                Assert.Contains(events, e => e.Title == "Event 1");
-                Assert.Contains(events, e => e.Title == "Event 2");
-            }
-        }
-
-        public async Task GetByIdAsyncTransactionTest()
-        {
-            using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-            {
-                EventRepository newRepository = new EventRepository();
-            }
-        }
+        //public async Task GetByIdAsyncTransactionTest()
+        //{
+        //    using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+        //    {
+        //        EventRepository newRepository = new EventRepository();
+        //    }
+        //}
 
 
     }
