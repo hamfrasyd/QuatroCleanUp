@@ -125,6 +125,7 @@ namespace QuatroCleanUpBackend
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
                             };
+
                         }
                         else
                         {
