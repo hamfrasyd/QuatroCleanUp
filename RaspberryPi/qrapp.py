@@ -13,6 +13,7 @@ def index():
 
 @app.route('/take_picture', methods=['POST'])
 def take_picture():
+    print('starter take picture')
     picam2 = Picamera2()
     picam2.start()
     time.sleep(2)  # Allow camera to initialize
@@ -24,8 +25,10 @@ def take_picture():
     decoded_objects = decode(img)
 
     if decoded_objects:
+        print('start med at decode')
         qr_data = decoded_objects[0].data.decode('utf-8')
-        api_url = "http://your-api-url/api/attendance"  # Replace with your API URL
+        api_url = "10.38.174.227:500/api/attendance"  # Replace with your API URL
+        print('start med post kald')
         response = requests.post(api_url, json={"eventId": qr_data})
         if response.status_code == 200:
             return f"Success: Event ID {qr_data} sent to API"

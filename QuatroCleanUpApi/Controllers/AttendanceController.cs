@@ -1,34 +1,46 @@
-using QuatroCleanUpBackend;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace QuatroCleanUpApi.Controllers
 {
     [Route("api/attendance")]
-
     [ApiController]
     public class AttendanceController : ControllerBase
     {
-        //ControllerBase uses Microsoft.AspNetCore.Mvc;
-
-        private readonly EventRepository _eventRepository;
-
-        private readonly ILogger<EventController> _logger;
-
-        public AttendanceController(EventRepository eventRepository, ILogger<EventController> logger) //Dependency Inject the repository class
+        // GET: api/<AttendanceController>
+        [HttpGet]
+        public IEnumerable<string> Get()
         {
-            _eventRepository = eventRepository;
-            _logger = logger;
+            return new string[] { "value1", "value2" };
         }
 
-        public IActionResult RecordAttendance([FromBody]int eventId){
+        // GET api/<AttendanceController>/5
+        [HttpGet("{id}")]
+        public string Get(int id)
+        {
+            return "value";
+        }
+
+        // POST api/<AttendanceController>
+        [HttpPost]
+        public IActionResult Post([FromBody]int eventId)  
+        {
+            Console.WriteLine("event id " + eventId);
             return Ok($"Attendance recorded for event {eventId}");
         }
+        
 
-       
-            
-    
+        // PUT api/<AttendanceController>/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody]string value)
+        {
+        }
 
+        // DELETE api/<AttendanceController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
     }
 }

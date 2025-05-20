@@ -1,4 +1,4 @@
-
+<script setup>
 app.component('event-create', {
     template:
     /*html*/
@@ -69,6 +69,7 @@ app.component('event-create', {
             {{ statusMessage }}
         </div>
       </form>
+     
       `,
       data() {
         return {
@@ -145,3 +146,4 @@ app.component('event-create', {
         }
     }
 })
+</script>
