@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using SixLabors.ImageSharp;
 
 
 namespace QuatroCleanUpBackend
@@ -15,117 +14,161 @@ namespace QuatroCleanUpBackend
         }
 
 
-        public Picture Add(Picture picture)
+        public async Task<Picture> AddAsync(Picture picture)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-
+            try
             {
-                string query = "INSERT INTO Pictures (EventId, PictureData, Description) VALUES (@EventId, @PictureData, @Description)";
-                
-                var command = new SqlCommand(query, connection);
+                using (SqlConnection connection = new SqlConnection(_connectionString))
 
-                command.Parameters.AddWithValue("@EventId", picture.EventId);
-                command.Parameters.AddWithValue("@PictureData", picture.PictureData);
-                command.Parameters.AddWithValue("@Description", picture.Description);
-
-                connection.Open();   
-                command.ExecuteNonQuery();
-
-            }
-            return picture;
-        }
-
-        public List<Picture> GetAll()
-        {
-            //initialisere en tom liste 
-            var pictureList = new List<Picture>();
-
-            //Opretter forbindelse til databasen 
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = "SELECT PictureId, EventId, PictureData, Description FROM Pictures";
-
-                SqlCommand command = new SqlCommand(query, connection);
-
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    while (reader.Read())
-                    {
-                        Picture picture = new Picture
-                        {
-                            PictureId = (int)reader["PictureId"],
-                            EventId = (int)reader["EventId"],
-                            PictureData = (byte[])reader["PictureData"],
-                            Description = (string)reader["Description"]
-                        };
+                    string query = "INSERT INTO Pictures (EventId, PictureData, Description) VALUES (@EventId, @PictureData, @Description)";
 
-                        pictureList.Add(picture);
-                    }
+                    var command = new SqlCommand(query, connection);
+
+                    command.Parameters.AddWithValue("@EventId", picture.EventId);
+                    command.Parameters.AddWithValue("@PictureData", picture.PictureData);
+                    command.Parameters.AddWithValue("@Description", picture.Description);
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+
                 }
+                return picture;
             }
-            return pictureList;
+            catch(Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
+                throw new Exception(ex.Message);
+            }
 
         }
 
-        public Picture GetById(int id)
+        public async Task<List<Picture>> GetAllAsync()
         {
-            //opretter forbindlese 
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            try
             {
-                string query = "SELECT PictureId, EventId, PictureData, Description FROM Pictures WHERE PictureId = @PictureId";
-                SqlCommand command = new SqlCommand(query, connection);
+                //initialisere en tom liste 
+                var pictureList = new List<Picture>();
 
-                command.Parameters.AddWithValue("@PictureId", id);
-
-
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
+                //Opretter forbindelse til databasen 
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    if (reader.Read())
+                    string query = "SELECT PictureId, EventId, PictureData, Description FROM Pictures";
+
+                    SqlCommand command = new SqlCommand(query, connection);
+
+                    await connection.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        return new Picture
+                        while (await reader.ReadAsync())
                         {
-                            PictureId = (int)reader["PictureId"],
-                            EventId = (int)reader["EventId"],
-                            PictureData = (byte[])reader["PictureData"],
-                            Description = (string)reader["Description"]
-                        };
-                    }
-    
-                    else
-                    {
-                        throw new Exception($"picture with ID {id} does not exist.");
+                            Picture picture = new Picture
+                            {
+                                PictureId = (int)reader["PictureId"],
+                                EventId = (int)reader["EventId"],
+                                PictureData = (byte[])reader["PictureData"],
+                                Description = (string)reader["Description"]
+                            };
+
+                            pictureList.Add(picture);
+                        }
                     }
                 }
+                return pictureList;
+            }
+            catch(Exception ex)
+            {
+                if(ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public async Task<Picture> GetByIdAsync(int id)
+        {
+            try
+            {
+                //opretter forbindlese 
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string query = "SELECT PictureId, EventId, PictureData, Description FROM Pictures WHERE PictureId = @PictureId";
+                    SqlCommand command = new SqlCommand(query, connection);
+
+                    command.Parameters.AddWithValue("@PictureId", id);
 
 
+                    await connection.OpenAsync();
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Picture
+                            {
+                                PictureId = (int)reader["PictureId"],
+                                EventId = (int)reader["EventId"],
+                                PictureData = (byte[])reader["PictureData"],
+                                Description = (string)reader["Description"]
+                            };
+                        }
+
+                        else
+                        {
+                            throw new Exception($"picture with ID {id} does not exist.");
+                        }
+                    }
+
+
+                }
+            }
+            catch(Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
+                throw new Exception(ex.Message);
             }
             
         }
 
-        public Picture Delete(int id)
+        public async Task<Picture> DeleteAsync(int id)
         {
-
-            Picture pictures = GetById(id);
-            if (pictures != null)
+            try
             {
-                //opretter forbindelse 
-                using (SqlConnection connection = new SqlConnection(_connectionString))
+                Picture pictures = await GetByIdAsync(id);
+                if (pictures != null)
                 {
-                    string query = "DELETE FROM Pictures WHERE PictureId = @PictureId";
-                    SqlCommand command = new SqlCommand(query, connection);
-                    command.Parameters.AddWithValue("@PictureId", id);
+                    //opretter forbindelse 
+                    using (SqlConnection connection = new SqlConnection(_connectionString))
+                    {
+                        string query = "DELETE FROM Pictures WHERE PictureId = @PictureId";
+                        SqlCommand command = new SqlCommand(query, connection);
+                        command.Parameters.AddWithValue("@PictureId", id);
 
-                    connection.Open();
-                    command.ExecuteNonQuery();
+                        await connection.OpenAsync();
+                        await command.ExecuteNonQueryAsync();
+                    }
                 }
+                else
+                {
+                    throw new Exception($"picture with ID {id} does not exist.");
+                }
+                return pictures;
             }
-            else
+            catch(Exception ex)
             {
-                throw new Exception($"picture with ID {id} does not exist.");
+                if (ex.InnerException != null)
+                {
+                    throw new Exception(ex.InnerException.Message);
+                }
+                throw new Exception(ex.Message);
             }
-            return pictures;
         }
         
     }

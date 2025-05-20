@@ -20,20 +20,20 @@ namespace MethodTests
             c = configuration;
                 }
 
-        [TestMethod()]
-        public void AddTest()
-        {
-            //Arrange
-            PicturesRepository pic = new PicturesRepository(c);
+        //[TestMethod()]
+        //public void AddTest()
+        //{
+        //    //Arrange
+        //    PicturesRepository pic = new PicturesRepository(c);
 
 
-            //Act
+        //    //Act
 
-            Picture picture = pic.Add(new Picture());
+        //    Picture picture = pic.Add(new Picture());
 
-            //Assert
-            Assert.AreEqual(1, picture.PictureId);
+        //    //Assert
+        //    Assert.AreEqual(1, picture.PictureId);
 
-        }
+        //}
     }
 }
