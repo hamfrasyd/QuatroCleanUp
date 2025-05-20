@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPictureTest", "TestPict
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureRepositoryTests", "PictureRepositoryTests\PictureRepositoryTests.csproj", "{08851432-3244-48C1-80C1-FB3AEF1EE2B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventRepositoryxUnit", "EventRepositoryxUnit\EventRepositoryxUnit.csproj", "{78246794-A760-485B-95E3-D1648EFF1834}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{08851432-3244-48C1-80C1-FB3AEF1EE2B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08851432-3244-48C1-80C1-FB3AEF1EE2B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08851432-3244-48C1-80C1-FB3AEF1EE2B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78246794-A760-485B-95E3-D1648EFF1834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78246794-A760-485B-95E3-D1648EFF1834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78246794-A760-485B-95E3-D1648EFF1834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78246794-A760-485B-95E3-D1648EFF1834}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
