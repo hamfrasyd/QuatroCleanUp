@@ -125,6 +125,7 @@ namespace QuatroCleanUpBackend
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
                             };
+
                         }
                         else
                         {
@@ -210,6 +211,8 @@ namespace QuatroCleanUpBackend
             }
 
         }
+
+
         /// <summary>
         /// We update the event based on the eventId provided in the input.
         /// </summary>
@@ -272,9 +275,7 @@ namespace QuatroCleanUpBackend
                 }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
                 throw new Exception(ex.Message);
-            }
-
-           
+            }           
         }
 
         /// <summary>
@@ -379,12 +380,6 @@ namespace QuatroCleanUpBackend
 
 
 
-/// <summary>
-/// In this method we create a new Event, using SqlConnection & SqlCommand and return the Event upon success.
-/// </summary>
-/// <param name="newEvent"></param>
-/// <returns>An Event object</returns>
-/// <remarks>
 /// I have downloaded the Microsoft.Data.SqlClient package, because it is the
 /// newer version.https://blog.danskingdom.com/Updating-from-System-Data-SqlClient-to-Microsoft-Data-SqlClient/
 /// In this metho I need to create a new event object, add it to the database
