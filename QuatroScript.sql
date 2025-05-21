@@ -1,4 +1,4 @@
-﻿USE mbuzinous_com_db_quatro_db;
+USE mbuzinous_com_db_quatro_db;
 GO
 
 -- ### Step 1: Create Tables without inline NOT NULL or DEFAULT constraints
@@ -21,6 +21,12 @@ CREATE TABLE Statuses (
 );
 GO
 
+CREATE TABLE AvatarPictures (
+    Id INT IDENTITY(1,1),
+    AvatarPictureData VARBINARY(MAX)
+);
+GO
+
 CREATE TABLE Users (
     UserId INT IDENTITY(1,1),
     Name NVARCHAR(100),
@@ -28,7 +34,7 @@ CREATE TABLE Users (
     PasswordHash NVARCHAR(MAX),
     RoleId INT,
     CreatedDate DATETIME2,
-	AvatarPicture VARBINARY(MAX)
+	AvatarPictureId INT
 );
 GO
 
@@ -40,7 +46,6 @@ CREATE TABLE Events (
     EndTime DATETIME2,
     FamilyFriendly BIT,
 	Participants INT,
-	PictureId VARBINARY(MAX),
     TrashCollected DECIMAL(18,0),
     StatusId INT,
     LocationId INT
@@ -91,6 +96,13 @@ ALTER TABLE Statuses
 ALTER COLUMN Name NVARCHAR(MAX) NOT NULL;
 GO
 
+ALTER TABLE AvatarPictures
+ALTER COLUMN Id INT NOT NULL;
+GO
+ALTER TABLE AvatarPictures
+ALTER COLUMN AvatarPictureData VARBINARY(MAX) NOT NULL;
+GO
+
 ALTER TABLE Users
 ALTER COLUMN UserId INT NOT NULL;
 GO
@@ -110,7 +122,7 @@ ALTER TABLE Users
 ALTER COLUMN CreatedDate DATETIME2 NOT NULL;
 GO
 ALTER TABLE Users
-ALTER COLUMN AvatarPicture VARBINARY(MAX) NOT NULL;
+ALTER COLUMN AvatarPictureId INT NOT NULL;
 GO
 
 ALTER TABLE Events
@@ -169,6 +181,10 @@ ALTER TABLE Users
 ADD CONSTRAINT DF_Users_CreatedDate DEFAULT GETUTCDATE() FOR CreatedDate;
 GO
 
+ALTER TABLE Users
+ADD CONSTRAINT DF_Users_AvatarPictureId DEFAULT 1 FOR AvatarPictureId;
+GO
+
 
 ALTER TABLE EventAttendances
 ADD CONSTRAINT DF_EventAttendances_CreatedDate DEFAULT GETUTCDATE() FOR CreatedDate;
@@ -182,6 +198,8 @@ ALTER TABLE Roles ADD CONSTRAINT PK_Roles PRIMARY KEY (Id);
 GO
 ALTER TABLE Statuses ADD CONSTRAINT PK_Statuses PRIMARY KEY (Id);
 GO
+ALTER TABLE AvatarPictures ADD CONSTRAINT PK_AvatarPictures PRIMARY KEY (Id);
+GO
 ALTER TABLE Users ADD CONSTRAINT PK_Users PRIMARY KEY (UserId);
 GO
 ALTER TABLE Events ADD CONSTRAINT PK_Events PRIMARY KEY (EventId);
@@ -194,6 +212,8 @@ GO
 
 -- Foreign Keys
 ALTER TABLE Users ADD CONSTRAINT FK_Users_Roles_RoleId  FOREIGN KEY (RoleId) REFERENCES Roles(Id);
+GO
+ALTER TABLE Users ADD CONSTRAINT FK_Users_AvatarPictures_AvatarPictureId  FOREIGN KEY (AvatarPictureId) REFERENCES AvatarPictures(Id);
 GO
 ALTER TABLE Events ADD CONSTRAINT FK_Events_Statuses_StatusId  FOREIGN KEY (StatusId) REFERENCES Statuses(Id);
 GO
@@ -301,6 +321,20 @@ GO
 INSERT INTO Statuses (Name) VALUES ('Upcoming'), ('Ongoing'), ('Completed'), ('Canceled');
 GO
 
+-- Dummy data for AvatarPictures
+INSERT INTO AvatarPictures (AvatarPictureData)
+VALUES
+(0xDEADBEEF),  -- Id = 1
+(0xAABBCCDD),  -- Id = 2
+(0x01020304),  -- Id = 3
+(0x11111111),  -- Id = 4
+(0x22222222),  -- Id = 5
+(0x33333333),  -- Id = 6
+(0x44444444),  -- Id = 7
+(0x55555555),  -- Id = 8
+(0x66666666),  -- Id = 9
+(0x77777777);  -- Id = 10
+GO
 -- ### Step 8: Insert Dummy Data
 -- Insert Locations
 INSERT INTO Locations (Latitude, Longitude)
@@ -316,7 +350,6 @@ VALUES
 (42.7840000, 18.9570000),  -- 9. Nikšić Public Library Garden
 (42.4410000, 19.2590000);  -- 10. Cineplex Delta City
 GO
-
 
 -- Insert Events (Note: Removed NumberOfAttendees as it’s not in the table definition)
 INSERT INTO Events (Title, Description, StartTime, EndTime, FamilyFriendly, TrashCollected, StatusId, LocationId)
@@ -351,4 +384,18 @@ VALUES
 ('Zero Waste Documentary Screening & Discussion', 
  'Watch a powerful documentary on the global waste crisis followed by a moderated discussion with local sustainability experts.', 
  '2025-09-12 19:00:00', '2025-09-12 21:30:00', 0, 0, 1, 10);
+GO
+
+INSERT INTO Pictures (EventId, PictureData, Description)
+VALUES
+(1, 0x00000001, N'Budva – strand før oprydning'),
+(1, 0x00000002, N'Workshop – flyer'),
+(1, 0x00000003, N'Swap Day – banner'),
+(1, 0x00000004, N'Picnic – parkstemning'),
+(5, 0x00000005, N'Waste Audit – affaldseksempel'),
+(6, 0x00000006, N'Riverbank – frivillige i aktion'),
+(7, 0x00000007, N'Cooking Class – ingredienser'),
+(8, 0x00000008, N'Fashion Talk – før/efter outfit'),
+(9, 0x00000009, N'Eco-Art Day – børnekrea'),
+(10,0x0000000A, N'Dokumentar – plakat');
 GO
