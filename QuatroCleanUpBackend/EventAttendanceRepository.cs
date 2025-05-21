@@ -175,8 +175,7 @@ namespace QuatroCleanUpBackend
                                 Name = (string)reader["Name"],
                                 RoleId = (int)reader["RoleId"],
                                 Email = (string)reader["Email"],
-                                CreatedDate = (DateTime)reader["CreatedDate"],
-                                AvatarPic = (byte[])reader["AvatarPic"]
+                                CreatedDate = (DateTime)reader["CreatedDate"]
                             };
 
                             EventAttendance eventAttendance = new EventAttendance
