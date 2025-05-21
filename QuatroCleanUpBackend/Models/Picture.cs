@@ -29,7 +29,7 @@
         }
 
 
-        public string ToString()
+        public override string ToString()
         {
             return $"PictureId: {PictureId}, EventId: {EventId}, Description: {Description}";
         }

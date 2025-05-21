@@ -6,7 +6,7 @@ using QuatroCleanUpBackend.Repos;
 
 namespace QuatroCleanUpApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -101,7 +101,7 @@ namespace QuatroCleanUpApi.Controllers
                 var returnUser = await _userRepository.DeleteUserAsync(id);
                 return Ok(returnUser);
             }
-            catch (KeyNotFoundException keyNotFoundException)
+            catch (Exception keyNotFoundException)
             {
                 return NotFound();
             }

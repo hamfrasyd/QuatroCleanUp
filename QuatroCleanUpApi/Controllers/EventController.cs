@@ -60,7 +60,7 @@ namespace QuatroCleanUpApi.Controllers
         {
             try
             {
-                Event e = await _eventRepository.GetByIdAsync(id);
+                var e = await _eventRepository.GetByIdAsync(id);
                 return Ok(e);
             }
             catch (KeyNotFoundException keyNotFoundEx)
