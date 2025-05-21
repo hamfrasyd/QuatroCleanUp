@@ -68,61 +68,67 @@ namespace QuatroCleanUpBackend
         /// <param name="it"></param>
         /// <returns>EventAttendance</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<EventAttendance> GetByIdAsync(int eventId, int userId)
-        {
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(_connectionString))
-                {
-                    string SqlQuery = "SELECT eventAttendance.EventId, eventAttendance.UserId, eventAttendance.CheckIn, eventAttendance.CreatedDate," +
-                        "               event.Title, user.TrachCollected" +
-                        "               FROM EventAttendances eventAttendance" +
-                        "               JOIN Events event ON eventAttendance = event.EventId" +
-                        "               JOIN Users user ON eventAttendance = user.UserId ";
+        //public async Task<EventAttendance> GetByIdAsync(int eventId, int userId)
+        //{
+        //    try
+        //    {
+        //        using (SqlConnection connection = new SqlConnection(_connectionString))
+        //        {
+        //            string SqlQuery = @"SELECT 
+        //                    eventAttendance.EventId, eventAttendance.UserId, eventAttendance.CheckIn, eventAttendance.CreatedDate," +
+        //                "   event.EventId AS Event_EventId, event.Title, event.Description, event.StartTime, event.EndTime, " +
+        //                "   event.FamilyFriendly, event.Participants, event.TrashCollected" +
+        //                "   event.StatusId, event.LocationId" +
+        //                "   user.UserId AS User_UserId, user.RoleId, user.Name, user.Email, user.CreatedDate" +
+        //                "   FROM EventAttendances eventAttendance" +
+        //                "   JOIN Events event ON eventAttendance = event.EventId" +
+        //                "   JOIN Users user ON eventAttendance = user.UserId ";
 
-                    List<EventAttendance> attandances = new List<EventAttendance>();
 
-                    SqlCommand command = new SqlCommand(SqlQuery, connection);
-                    command.Parameters.AddWithValue("@EventId", eventId);
-                    command.Parameters.AddWithValue("@UserId", userId);
 
-                    await connection.OpenAsync();
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            return new EventAttendance
-                            {
-                                SomeEvent = (Event)reader["EventId"],
-                                SomeUser = (User)reader["UserId"],
-                                CreatedDate = (DateTime)reader["CreatedDate"],
-                                CheckIn = (bool)reader["CheckIn"]
-                                //Skal vi have flere data med her til PlayFab? TrashCollected?
-                            };
-                        }
-                        else
-                        {
-                            throw new KeyNotFoundException($"Event with Id {eventId} does not exist.");
-                        }
-                    }
-                }
-            }
-            catch (KeyNotFoundException ex)
-            {
-                Console.Error.WriteLine($"{ex.Message}");
-                throw new Exception(ex.Message);
-            }
-            catch (DbException ex)
-            {
-                Console.Error.WriteLine($"{ex.Message}");
-                throw new Exception(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"{ex.Message}");
-                throw new Exception(ex.Message);
-            }
-        }
+        //            List<EventAttendance> attandances = new List<EventAttendance>();
+
+        //            SqlCommand command = new SqlCommand(SqlQuery, connection);
+        //            command.Parameters.AddWithValue("@EventId", eventId);
+        //            command.Parameters.AddWithValue("@UserId", userId);
+
+        //            await connection.OpenAsync();
+        //            using (SqlDataReader reader = await command.ExecuteReaderAsync())
+        //            {
+        //                if (await reader.ReadAsync())
+        //                {
+        //                    return new EventAttendance
+        //                    {
+        //                        SomeEvent = (Event)reader["EventId"],
+        //                        SomeUser = (User)reader["UserId"],
+        //                        CreatedDate = (DateTime)reader["CreatedDate"],
+        //                        CheckIn = (bool)reader["CheckIn"]
+        //                        //Skal vi have flere data med her til PlayFab? TrashCollected?
+        //                    };
+        //                }
+        //                else
+        //                {
+        //                    throw new KeyNotFoundException($"Event with Id {eventId} does not exist.");
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (KeyNotFoundException ex)
+        //    {
+        //        Console.Error.WriteLine($"{ex.Message}");
+        //        throw new Exception(ex.Message);
+        //    }
+        //    catch (DbException ex)
+        //    {
+        //        Console.Error.WriteLine($"{ex.Message}");
+        //        throw new Exception(ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.Error.WriteLine($"{ex.Message}");
+        //        throw new Exception(ex.Message);
+        //    }
+        //}
 
         /// <summary>
         /// GetAllAsync fetches all data in the EventAttendance table and therefore in the subsequent Event and User tables
