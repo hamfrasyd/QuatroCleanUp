@@ -1,7 +1,5 @@
 using QuatroCleanUpBackend;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
 
 namespace QuatroCleanUpApi.Controllers
 {

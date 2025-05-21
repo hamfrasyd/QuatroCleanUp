@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using PlayFab.AdminModels;
 
-namespace QuatroCleanUpBackend
+namespace QuatroCleanUpBackend.Repos
 {
     class EventAttendanceRepository
     {
@@ -175,8 +169,7 @@ namespace QuatroCleanUpBackend
                                 Name = (string)reader["Name"],
                                 RoleId = (int)reader["RoleId"],
                                 Email = (string)reader["Email"],
-                                CreatedDate = (DateTime)reader["CreatedDate"],
-                                AvatarPic = (byte[])reader["AvatarPic"]
+                                CreatedDate = (DateTime)reader["CreatedDate"]
                             };
 
                             EventAttendance eventAttendance = new EventAttendance

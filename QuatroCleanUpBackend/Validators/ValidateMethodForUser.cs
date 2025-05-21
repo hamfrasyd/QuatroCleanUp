@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace QuatroCleanUpBackend
+namespace QuatroCleanUpBackend.Validators
 {
     public static class ValidateMethodForUser
     {
@@ -31,7 +31,7 @@ namespace QuatroCleanUpBackend
                 throw new ArgumentException("Name must be between 1 and 50 characters.");
             }
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(name, @"^[a-zA-ZæøåÆØÅ\s-]+$"))
+            if (!Regex.IsMatch(name, @"^[a-zA-ZæøåÆØÅ\s-]+$"))
             {
                 throw new ArgumentException("Name can only contain letters and spaces.");
             }

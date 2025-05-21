@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using Azure.Core;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic;
+using QuatroCleanUpBackend.Validators;
 
-namespace QuatroCleanUpBackend
+namespace QuatroCleanUpBackend.Repos
 {
     public class UserRepository
     {

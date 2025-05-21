@@ -1,12 +1,6 @@
 ﻿using QuatroCleanUpBackend;
 using Microsoft.AspNetCore.Mvc;
-using PlayFab.ServerModels;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Logging;
-using PlayFab;
 
 namespace QuatroCleanUpApi.Controllers
 {

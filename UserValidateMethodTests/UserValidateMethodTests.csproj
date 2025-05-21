@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\QuatroCleanUpApi\QuatroCleanUpApi.csproj" />
     <ProjectReference Include="..\QuatroCleanUpBackend\QuatroCleanUpBackend.csproj" />
   </ItemGroup>
 

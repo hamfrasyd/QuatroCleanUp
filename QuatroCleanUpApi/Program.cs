@@ -1,6 +1,6 @@
 using PlayFab;
 using QuatroCleanUpBackend;
-using PlayFab;
+using QuatroCleanUpBackend.Repos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -71,7 +71,6 @@ public class Startup
         app.UseEndpoints(endpoints => endpoints.MapControllers());
 
         // Configure PlayFab settings
-
         PlayFabSettings.staticSettings.TitleId = "1C4FBC";
         PlayFabSettings.staticSettings.DeveloperSecretKey = "MOAHYJ3HPD5NWU14XAMEX5GMPYXOP3OMKNGX4PRKSZ6RBN3NWP";
     }
