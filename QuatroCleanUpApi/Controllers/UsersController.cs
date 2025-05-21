@@ -31,7 +31,7 @@ namespace QuatroCleanUpApi.Controllers
             }
             else
             {
-                return Ok();
+                return Ok(userList);
             }
         }
 

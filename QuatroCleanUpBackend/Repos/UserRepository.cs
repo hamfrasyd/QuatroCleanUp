@@ -32,13 +32,13 @@ namespace QuatroCleanUpBackend.Repos
             {
                 try
                 {
-                    string SqlQuery = @"INSERT INTO Users (Name, Email, Password, RoleId, CreatedDate, AvatarPictureId)
-                                    VALUES (@Name, @Email, @Password, @RoleId, @CreatedDate, @AvatarPictureId); SELCET SCOPE_IDENTITY()";
+                    string SqlQuery = @"INSERT INTO Users (Name, Email, PasswordHash, RoleId, CreatedDate, AvatarPictureId)
+                                    VALUES (@Name, @Email, @PasswordHash, @RoleId, @CreatedDate, @AvatarPictureId); SELECT SCOPE_IDENTITY()";
 
                     SqlCommand command = new SqlCommand(SqlQuery, connection);
                     command.Parameters.AddWithValue("@Name", newUser.Name);
                     command.Parameters.AddWithValue("@Email", newUser.Email);
-                    command.Parameters.AddWithValue("@Password", newUser.Password);
+                    command.Parameters.AddWithValue("@PasswordHash", newUser.Password);
                     command.Parameters.AddWithValue("@RoleId", newUser.RoleId);
                     command.Parameters.AddWithValue("@CreatedDate", newUser.CreatedDate);
                     command.Parameters.AddWithValue("@AvatarPictureId", newUser.AvatarPictureId);
@@ -52,12 +52,9 @@ namespace QuatroCleanUpBackend.Repos
                 catch (Exception ex)
                 {
                     Console.Error.WriteLine($"Sql Error: {ex.Message}");
-                    throw;
+                    throw new Exception("Fejl i Create " + ex.Message);
                 }
-
-
             }
-
 
         }
 
@@ -89,7 +86,7 @@ namespace QuatroCleanUpBackend.Repos
                                 UserId = (int)reader["UserId"],
                                 Name = (string)reader["Name"],
                                 Email = (string)reader["Email"],
-                                Password = (string)reader["Password"],
+                                Password = (string)reader["PasswordHash"],
                                 RoleId = (int)reader["RoleId"],
                                 CreatedDate = (DateTime)reader["CreatedDate"],
                                 AvatarPictureId = (int)reader["AvatarPictureId"]
@@ -97,18 +94,15 @@ namespace QuatroCleanUpBackend.Repos
                             userList.Add(newUser);
                         }
                     }
-                    return userList;
                 }
-
+                return userList;
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                Console.Error.WriteLine($"");
-                throw;
+                Console.Error.WriteLine($"{ex.Message}");
+                throw new Exception("Fejl i get all " + ex.Message);
 
             }
-
-
         }
 
         public async Task<User> GetUserByIdAsync(int userId)
@@ -132,7 +126,7 @@ namespace QuatroCleanUpBackend.Repos
                                 UserId = (int)reader["UserId"],
                                 Name = (string)reader["Name"],
                                 Email = (string)reader["Email"],
-                                Password = (string)reader["Password"],
+                                Password = (string)reader["PasswordHash"],
                                 RoleId = (int)reader["RoleId"],
                                 CreatedDate = (DateTime)reader["CreatedDate"],
                                 AvatarPictureId = (int)reader["AvatarPictureId"],
@@ -147,9 +141,9 @@ namespace QuatroCleanUpBackend.Repos
                 }
 
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                Console.Error.WriteLine($"Fejl i get by id: {ex.Message}");
                 throw;
             }
 
@@ -170,7 +164,7 @@ namespace QuatroCleanUpBackend.Repos
                     string SqlQuery = @"UPDATE Users SET
                                      Name = @Name,
                                      Email = @Email,
-                                     Password = @Password,
+                                     PasswordHash = @PasswordHash,
                                      AvatarPictureId = @AvatarPictureId
                                   WHERE
                                      UserId = @UserId";
@@ -178,19 +172,22 @@ namespace QuatroCleanUpBackend.Repos
                     command.Parameters.AddWithValue("@UserId", userUpdate.UserId);
                     command.Parameters.AddWithValue("@Name", userUpdate.Name);
                     command.Parameters.AddWithValue("@Email", userUpdate.Email);
-                    command.Parameters.AddWithValue("@Password", userUpdate.Password);
+                    command.Parameters.AddWithValue("@PasswordHash", userUpdate.Password);
                     command.Parameters.AddWithValue("@AvatarPictureId", userUpdate.AvatarPictureId);
 
                     await connection.OpenAsync();
                     await command.ExecuteNonQueryAsync();
 
                 }
+                return userUpdate;
+
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
                 Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw new Exception("Fejl i update " + ex.Message);
+
             }
-            return userUpdate;
 
         }
 

@@ -11,7 +11,6 @@ namespace QuatroCleanUpBackend.Validators
             {
                 throw new ArgumentNullException(nameof(user), "User cannot be null.");
             }
-            ValidateUserID(user.UserId);
             ValidateUserName(user.Name);
             ValidateUserEmail(user.Email);
             ValidateUserPassword(user.Password);
