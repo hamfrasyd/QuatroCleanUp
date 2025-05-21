@@ -2,10 +2,11 @@
 using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using QuatroCleanUpBackend.Models;
 
 namespace QuatroCleanUpBackend.Repos
 {
-    class EventAttendanceRepository
+    public class EventAttendanceRepository
     {
         private readonly string _connectionString;
 

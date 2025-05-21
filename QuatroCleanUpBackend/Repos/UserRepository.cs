@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using QuatroCleanUpBackend.Models;
 using QuatroCleanUpBackend.Validators;
 
 namespace QuatroCleanUpBackend.Repos
@@ -19,10 +20,6 @@ namespace QuatroCleanUpBackend.Repos
 
         }
 
-        public UserRepository()
-        {
-        }
-
         /// <summary>
         /// Method to create a new user, using the SqlConnecntion & SqlCommand and return the user upon succes 
         /// </summary>
@@ -36,7 +33,7 @@ namespace QuatroCleanUpBackend.Repos
                 try
                 {
                     string SqlQuery = @"INSERT INTO Users (Name, Email, Password, RoleId, CreatedDate, AvatarPictureId)
-                                    VALUES (@Name, @Email, @Password, @RoleId, @CreatedDate, @AvatarPictureId); SELCET SCOPE_IDENTITY();";
+                                    VALUES (@Name, @Email, @Password, @RoleId, @CreatedDate, @AvatarPictureId); SELCET SCOPE_IDENTITY()";
 
                     SqlCommand command = new SqlCommand(SqlQuery, connection);
                     command.Parameters.AddWithValue("@Name", newUser.Name);

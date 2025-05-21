@@ -8,16 +8,9 @@ namespace QuatroCleanUpApi.Controllers
     [ApiController]
     public class AttendanceController : ControllerBase
     {
-        //ControllerBase uses Microsoft.AspNetCore.Mvc;
 
-        private readonly EventRepository _eventRepository;
-
-        private readonly ILogger<EventController> _logger;
-
-        public AttendanceController(EventRepository eventRepository, ILogger<EventController> logger) //Dependency Inject the repository class
+        public AttendanceController() //Dependency Inject the repository class
         {
-            _eventRepository = eventRepository;
-            _logger = logger;
         }
 
         public IActionResult RecordAttendance([FromBody]int eventId){

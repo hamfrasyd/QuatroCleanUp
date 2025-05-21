@@ -1,7 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using QuatroCleanUpBackend.Models;
 
-namespace QuatroCleanUpBackend
+namespace QuatroCleanUpBackend.Repos
 {
     public class EventRepository
     {

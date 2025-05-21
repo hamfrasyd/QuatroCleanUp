@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QuatroCleanUpBackend;
+using QuatroCleanUpBackend.Models;
 using QuatroCleanUpBackend.Repos;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -8,18 +8,16 @@ namespace QuatroCleanUpApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
-
         private readonly UserRepository _userRepository;
 
-        public UserController(UserRepository userRepository)
+        public UsersController(UserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
-
-        // GET: api/<UserController>
+        // GET: api/<UsersController>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -37,7 +35,7 @@ namespace QuatroCleanUpApi.Controllers
             }
         }
 
-        // GET api/<UserController>/5
+        // GET api/<UsersController>/5
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -55,7 +53,7 @@ namespace QuatroCleanUpApi.Controllers
             }
         }
 
-        // POST api/<UserController>
+        // POST api/<UsersController>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,7 +70,7 @@ namespace QuatroCleanUpApi.Controllers
             }
         }
 
-        // PUT api/<UserController>/5
+        // PUT api/<UsersController>/5
         [HttpPut]
         [Route("{UserId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -91,8 +89,7 @@ namespace QuatroCleanUpApi.Controllers
             }
             catch (KeyNotFoundException KeyNotFoundException) { return NotFound(); }
         }
-
-        // DELETE api/<UserController>/5
+        // DELETE api/<UsersController>/5
         [HttpDelete]
         [Route("{UserId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

@@ -2,6 +2,8 @@
 using System.Transactions;
 using Microsoft.Extensions.Configuration;
 using QuatroCleanUpBackend;
+using QuatroCleanUpBackend.Models;
+using QuatroCleanUpBackend.Repos;
 /*
   IMPORTANT SETUP NOTE:
   To make sure this test can read your appsettings.json file at runtime,

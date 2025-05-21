@@ -1,6 +1,7 @@
-﻿using QuatroCleanUpBackend;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using QuatroCleanUpBackend.Models;
+using QuatroCleanUpBackend.Repos;
 
 namespace QuatroCleanUpApi.Controllers
 {

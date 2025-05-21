@@ -1,4 +1,4 @@
-﻿using QuatroCleanUpBackend;
+﻿using QuatroCleanUpBackend.Models;
 using QuatroCleanUpBackend.Validators;
 
 namespace MethodTests

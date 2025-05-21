@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using QuatroCleanUpBackend.Models;
+using System.Text.RegularExpressions;
 
 namespace QuatroCleanUpBackend.Validators
 {

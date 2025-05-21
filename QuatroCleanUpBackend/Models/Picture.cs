@@ -1,4 +1,4 @@
-﻿namespace QuatroCleanUpBackend
+﻿namespace QuatroCleanUpBackend.Models
 {
     public class Picture
     {
