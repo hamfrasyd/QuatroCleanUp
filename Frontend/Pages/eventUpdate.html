@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Events</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <!-- Import bootstrap css CDN-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <!-- TODO: Import Vue.js core library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+        <a class="navbar-brand" href="eventList.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+            </svg> 
+            CleanUp
+        </a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="eventList.html">All Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" aria-disabled="true">Points</a>
+                </li>
+                  <li class="nav-item">
+                    <a class="nav-link disabled" href="#" aria-disabled="true">About Us</a>
+                </li> 
+            </ul>
+
+            </div>
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        </svg>
+                        Profile
+                    </a>
+                </li> 
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Vue app -->
+    <div id="app" class="p-4">        
+        <div class="mb-3">
+            <a href="eventList.html" class="btn btn-dark py-1">← Go back to Events Page</a>
+        </div>
+        
+        <h1>Nothing to se here...</h1>
+   
+    </div>
+    <!--import app-->
+    <script src="/Frontend/js/main.js"></script>
+      <script src="/Frontend/js/Components/Pictures/UploadPicture.js"></script>
+
+
+    <!--mount app-->
+    <script>
+        const mountedApp = app.mount('#app')
+    </script>
+    
+</body>
+</html>
