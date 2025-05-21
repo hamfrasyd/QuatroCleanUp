@@ -96,7 +96,7 @@ namespace QuatroCleanUpBackend
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Event</returns>
-        public async Task<Event> GetByIdAsync(int id)
+        public async Task<Event?> GetByIdAsync(int id)
         {
             try
             {
@@ -125,10 +125,12 @@ namespace QuatroCleanUpBackend
                                 StatusId = (int)reader["StatusId"],
                                 LocationId = (int)reader["LocationId"]
                             };
+
                         }
                         else
                         {
-                            throw new KeyNotFoundException($"Event with Id {id} does not exist.");
+                            //throw new KeyNotFoundException($"Event with Id {id} does not exist.");
+                            return null;
                         }
                     }
                 }
@@ -209,6 +211,8 @@ namespace QuatroCleanUpBackend
             }
 
         }
+
+
         /// <summary>
         /// We update the event based on the eventId provided in the input.
         /// </summary>
@@ -271,11 +275,60 @@ namespace QuatroCleanUpBackend
                 }
                 Console.Error.WriteLine($"Some error occurred: {ex.Message}");
                 throw new Exception(ex.Message);
-            }
-
-           
+            }           
         }
 
+        /// <summary>
+        /// PlayFabUpdate - in progress - don't mind the scaffolding
+        /// </summary>
+        /// <param name="eventUpdate"></param>
+        /// <returns>Event</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task<Event> UpdateEventStatusAsync(int eventId, int newStatusId)
+        {
+            Event newEventStatus = await GetByIdAsync(eventId);
+
+
+            if (newEventStatus == null)
+            {
+                throw new ArgumentNullException(nameof(newEventStatus), "Event with that id does not exist.");
+            }
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string SqlQuery = @"UPDATE Events 
+                                SET 
+                                    StatusId = @StatusId,
+                                WHERE
+                                    EventId = @EventId";
+
+                    SqlCommand command = new SqlCommand(SqlQuery, connection);
+                    command.Parameters.AddWithValue("@StatusId", newStatusId);                  
+
+                    await connection.OpenAsync();
+                    await command.ExecuteNonQueryAsync();
+                    
+                    return newEventStatus;
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.Error.WriteLine($"Sql Error: {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    Console.Error.WriteLine($"Some error occurred: {ex.InnerException.Message}");
+                    throw new Exception(ex.InnerException.Message);
+                }
+                Console.Error.WriteLine($"Some error occurred: {ex.Message}");
+                throw new Exception(ex.Message);
+            }
+
+        }
 
         /// <summary>
         /// Deletes an event from the database. Find the event from the EventId.
@@ -327,12 +380,6 @@ namespace QuatroCleanUpBackend
 
 
 
-/// <summary>
-/// In this method we create a new Event, using SqlConnection & SqlCommand and return the Event upon success.
-/// </summary>
-/// <param name="newEvent"></param>
-/// <returns>An Event object</returns>
-/// <remarks>
 /// I have downloaded the Microsoft.Data.SqlClient package, because it is the
 /// newer version.https://blog.danskingdom.com/Updating-from-System-Data-SqlClient-to-Microsoft-Data-SqlClient/
 /// In this metho I need to create a new event object, add it to the database

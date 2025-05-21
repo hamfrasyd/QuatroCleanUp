@@ -1,12 +1,16 @@
 ﻿using QuatroCleanUpBackend;
 using Microsoft.AspNetCore.Mvc;
+using PlayFab.ServerModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using PlayFab;
 
 namespace QuatroCleanUpApi.Controllers
 {
     [Route("api/events")]
-
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -64,12 +68,12 @@ namespace QuatroCleanUpApi.Controllers
                 Event e = await _eventRepository.GetByIdAsync(id);
                 return Ok(e);
             }
-            catch (InvalidOperationException iOE)
+            catch (KeyNotFoundException keyNotFoundEx)
             {
-                _logger.LogError(iOE.Message, "Error GetById event");
-                return NotFound(iOE.Message);
+                _logger.LogError(keyNotFoundEx.Message, "Error GetById event");
+                return NotFound(keyNotFoundEx.Message);
             }
-            catch (SqlException ex)
+            catch (SqlException ex) //overvej at gøre til DbException?
             {
                 _logger.LogError(ex.Message, "Error GetById event");
                 return NotFound(ex.Message);
@@ -146,6 +150,74 @@ namespace QuatroCleanUpApi.Controllers
             }
 
         }
+
+        //[HttpPut]
+        //[Route("{id/status}")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public async Task<IActionResult> Put(int id, [FromBody] int newStatusId)
+        //{
+        //    try
+        //    {
+
+            
+        //        var @event = await _eventRepository.GetByIdAsync(id);
+        //        if (@event == null) return NotFound();
+
+        //        @event.StatusId = newStatusId;
+        //        await _eventRepository.UpdateEventStatusAsync(id, newStatusId);
+
+        //        if (newStatusId == 3) // Completed
+        //        {
+        //            var attendees = await _eventRepository.EventAttendances
+        //                .Where(ea => ea.EventId == id)
+        //                .Select(ea => ea.UserId)
+        //                .ToListAsync();
+
+        //            var updates = new List<Dictionary<string, object>>();
+        //            foreach (var userId in attendees)
+        //            {
+        //                var user = await _eventRepository.GetByIdAsync(userId);
+        //                if (user != null && !string.IsNullOrEmpty(user.PlayFabPlayerId))
+        //                {
+        //                    updates.Add(new Dictionary<string, object>
+        //            {
+        //                { "PlayerId", user.PlayFabPlayerId },
+        //                { "Amount", @event.TrashCollected }
+        //            });
+        //                }
+        //            }
+
+        //            var request = new ExecuteCloudScriptServerRequest
+        //            {
+        //                FunctionName = "AddTrashCollectedBatch",
+        //                FunctionParameter = new { Updates = updates },
+        //                GeneratePlayStreamEvent = true
+        //            };
+
+        //            await PlayFabServerAPI.ExecuteCloudScriptAsync(request);
+        //        }
+
+        //        return Ok();
+        //    }
+        //    catch (ArgumentNullException ex)
+        //    {
+        //        _logger.LogError(ex.Message, "Error update event");
+        //        return BadRequest(ex.Message);
+        //    }
+        //    catch (SqlException ex)
+        //    {
+        //        _logger.LogError(ex.Message, "Error update event");
+        //        return BadRequest(ex.Message);
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message, "Error update event");
+        //        return BadRequest(ex.Message);
+        //    }       
+
+        //}
 
         [HttpDelete]
         [Route("{id}")]
